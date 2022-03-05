@@ -1,5 +1,5 @@
 {
-   "checksum": "ce662d88c803740d3dfad9fd5c017a49",
+   "checksum": "c5889f36c09b979328be4bf376b5d3e0",
    "roots": {
       "bookmark_bar": {
          "children": [ {
@@ -9,9 +9,16 @@
             "name": "500+ Free England Flag & England Images",
             "type": "url",
             "url": "https://pixabay.com/images/search/england%20flag/"
+         }, {
+            "date_added": "13290909737443773",
+            "guid": "c0eb5577-d04a-4bdf-96ad-9444008c5906",
+            "id": "8",
+            "name": "Getting started",
+            "type": "url",
+            "url": "https://drift.simonbinder.eu/docs/getting-started/"
          } ],
          "date_added": "13290814656834656",
-         "date_modified": "13290818119216622",
+         "date_modified": "13290909737443773",
          "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
          "id": "1",
          "name": "Bookmarks Bar",

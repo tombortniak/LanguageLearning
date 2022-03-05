@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:language_learning/components/menu_button.dart';
 import 'package:language_learning/components/language_card.dart';
 
@@ -17,19 +18,24 @@ class LanguagePage extends StatelessWidget {
             spacing: 20.0,
             children: [
               LanguageCard(
-                text: 'spanish',
-                flag: Image.asset(
+                onTap: () {},
+                text: 'hiszpański',
+                image: Image.asset(
                   'images/spain.png',
-                  height: 150,
-                  width: 150,
                 ),
               ),
               LanguageCard(
-                text: 'english',
-                flag: Image.asset(
+                onTap: () {},
+                text: 'angielski',
+                image: Image.asset(
                   'images/great_britain.png',
-                  height: 150,
-                  width: 150,
+                ),
+              ),
+              LanguageCard(
+                onTap: () {},
+                image: Icon(
+                  FontAwesomeIcons.plusCircle,
+                  size: 50.0,
                 ),
               ),
             ],

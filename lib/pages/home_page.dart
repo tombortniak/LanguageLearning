@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:drift/drift.dart' as drift;
+import 'package:provider/provider.dart';
+import 'package:language_learning/database/database.dart';
 import 'language_page.dart';
 import '../components/menu_button.dart';
 
@@ -24,12 +27,13 @@ class HomePage extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 75.0),
               ),
               Container(
-                child: MenuButton(text: 'Rozpocznij naukę', onPressed: () {}),
+                child: MenuButton(
+                    text: 'Rozpocznij naukę', onPressed: () async {}),
                 margin: EdgeInsets.symmetric(vertical: 20.0),
               ),
               Container(
                 child: MenuButton(
-                    text: 'Dodaj nowe słowa lub wyrażenia',
+                    text: 'Zarządzaj językami',
                     onPressed: () {
                       Navigator.push(
                           context,

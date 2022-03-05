@@ -1,24 +1,36 @@
 import 'package:flutter/material.dart';
 
 class LanguageCard extends StatelessWidget {
-  String _text;
-  Image _flag;
+  String text;
+  Widget image;
+  void Function()? onTap;
 
-  LanguageCard({required text, required flag})
-      : _text = text,
-        _flag = flag;
+  LanguageCard({required this.image, required this.onTap, this.text = ''});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          _flag,
-          Text(_text),
-        ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(15.0),
+      child: Container(
+        width: 150.0,
+        height: 150.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            image,
+            if (text != '')
+              SizedBox(
+                height: 15.0,
+              ),
+            if (text != '') Text(text),
+          ],
+        ),
+        padding: EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.blueAccent),
+            borderRadius: BorderRadius.circular(15.0)),
       ),
-      padding: EdgeInsets.all(15.0),
-      decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
     );
   }
 }

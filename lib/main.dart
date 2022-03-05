@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+import 'package:language_learning/database/database.dart';
 import 'pages/home_page.dart';
 import 'components/menu_button.dart';
 
 void main() {
-  runApp(const LanguageLearningApp());
+  runApp(Provider<MyDatabase>(
+    create: (context) => MyDatabase(),
+    child: const LanguageLearningApp(),
+    dispose: (context, db) => db.close(),
+  ));
 }
 
 class LanguageLearningApp extends StatelessWidget {
@@ -13,7 +19,7 @@ class LanguageLearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LanguageLearning',
+      title: 'Language Learning',
       home: const HomePage(),
     );
   }
