@@ -28,6 +28,19 @@ class _ManagementPageState extends State<ManagementPage> {
     return phrases;
   }
 
+  Future updatePhrase(BuildContext context, int index) async {
+    var updatedPhrase = Phrase(
+        id: phrases[index].id,
+        language: 'spanish',
+        content: _editPhraseTextController.text,
+        polish_translation: _editTranslationTextController.text);
+    await Provider.of<MyDatabase>(context, listen: false)
+        .updatePhrase(updatedPhrase);
+    setState(() {
+      edited[index] = false;
+    });
+  }
+
   Future removePhrase(BuildContext context, String phrase) async {
     await Provider.of<MyDatabase>(context, listen: false).remove(phrase);
   }
@@ -63,7 +76,7 @@ class _ManagementPageState extends State<ManagementPage> {
               );
               widget = SingleChildScrollView(
                 child: DataTable(
-                  showCheckboxColumn: true,
+                  showCheckboxColumn: false,
                   columns: const <DataColumn>[
                     DataColumn(
                       label: Text('fraza'),
@@ -85,12 +98,6 @@ class _ManagementPageState extends State<ManagementPage> {
                               .withOpacity(0.08);
                         return Colors.transparent;
                       }),
-                      selected: selected[index],
-                      onSelectChanged: (bool? value) {
-                        setState(() {
-                          selected[index] = value!;
-                        });
-                      },
                       cells: <DataCell>[
                         DataCell(
                           edited[index]
@@ -98,11 +105,20 @@ class _ManagementPageState extends State<ManagementPage> {
                                   builder: ((context) {
                                     _editPhraseTextController.text =
                                         phrases[index].content;
+                                    _editPhraseTextController.selection =
+                                        TextSelection.fromPosition(
+                                      TextPosition(
+                                          offset: _editPhraseTextController
+                                              .text.length),
+                                    );
                                     return TextFormField(
                                       style: TextStyle(fontSize: 14.0),
                                       controller: _editPhraseTextController,
                                       autofocus: true,
-                                      textInputAction: TextInputAction.go,
+                                      textInputAction: TextInputAction.search,
+                                      onFieldSubmitted: (String? value) async {
+                                        await updatePhrase(context, index);
+                                      },
                                     );
                                   }),
                                 )
@@ -114,12 +130,20 @@ class _ManagementPageState extends State<ManagementPage> {
                                   builder: ((context) {
                                     _editTranslationTextController.text =
                                         phrases[index].polish_translation;
+                                    _editTranslationTextController.selection =
+                                        TextSelection.fromPosition(TextPosition(
+                                            offset:
+                                                _editTranslationTextController
+                                                    .text.length));
                                     return TextFormField(
                                       style: TextStyle(fontSize: 14.0),
                                       controller:
                                           _editTranslationTextController,
                                       autofocus: true,
-                                      textInputAction: TextInputAction.go,
+                                      textInputAction: TextInputAction.search,
+                                      onFieldSubmitted: (String? value) async {
+                                        await updatePhrase(context, index);
+                                      },
                                     );
                                   }),
                                 )
@@ -227,8 +251,31 @@ class _ManagementPageState extends State<ManagementPage> {
                   ),
                   Flexible(
                     flex: 3,
-                    child: Container(
-                      child: widget,
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 30.0),
+                          padding: EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(15.0)),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Text(
+                                'Wyszukaj frazę',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: widget,
+                        ),
+                      ],
                     ),
                   )
                 ],
