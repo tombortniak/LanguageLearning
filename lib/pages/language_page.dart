@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'management_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:language_learning/components/menu_button.dart';
 import 'package:language_learning/components/language_card.dart';
@@ -18,7 +19,13 @@ class LanguagePage extends StatelessWidget {
             spacing: 20.0,
             children: [
               LanguageCard(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ManagementPage(),
+                      ));
+                },
                 text: 'hiszpański',
                 image: Image.asset(
                   'images/spain.png',
@@ -41,10 +48,11 @@ class LanguagePage extends StatelessWidget {
             ],
           ),
           MenuButton(
-              text: 'Powrót',
-              onPressed: () {
-                Navigator.pop(context);
-              })
+            text: 'Powrót',
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
         ],
       )),
     );

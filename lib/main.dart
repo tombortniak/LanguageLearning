@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
@@ -18,9 +19,13 @@ class LanguageLearningApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final actions = Map.of(WidgetsApp.defaultActions)
+      ..remove(LogicalKeySet(LogicalKeyboardKey.space))
+      ..remove(LogicalKeySet(LogicalKeyboardKey.enter));
     return MaterialApp(
       title: 'Language Learning',
-      home: const HomePage(),
+      home: HomePage(),
+      actions: actions,
     );
   }
 }

@@ -34,8 +34,13 @@ class MyDatabase extends _$MyDatabase {
     return into(phrases).insert(phrase);
   }
 
-  Future remove(int id) {
-    return (delete(phrases)..where((t) => t.id.equals(id))).go();
+  Future updatePhrase(Phrase phrase) {
+    return update(phrases).replace(phrase);
+  }
+
+  Future remove(String phraseContent) {
+    return (delete(phrases)..where((t) => t.content.equals(phraseContent)))
+        .go();
   }
 
   Future removeAll() {

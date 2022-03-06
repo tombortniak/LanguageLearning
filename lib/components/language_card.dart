@@ -28,7 +28,7 @@ class LanguageCard extends StatelessWidget {
         ),
         padding: EdgeInsets.all(15.0),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.blueAccent),
+            border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(15.0)),
       ),
     );
