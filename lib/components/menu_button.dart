@@ -12,14 +12,8 @@ class MenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: _onPressed,
-      child: Text(_text),
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(25.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(15.0),
-          ),
-        ),
+      child: Text(
+        _text,
       ),
     );
   }

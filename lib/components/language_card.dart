@@ -13,8 +13,8 @@ class LanguageCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(15.0),
       child: Container(
-        width: 150.0,
-        height: 150.0,
+        width: 160.0,
+        height: 160.0,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -23,7 +23,11 @@ class LanguageCard extends StatelessWidget {
               SizedBox(
                 height: 15.0,
               ),
-            if (text != '') Text(text),
+            if (text != '')
+              Text(
+                text,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
           ],
         ),
         padding: EdgeInsets.all(15.0),

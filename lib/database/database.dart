@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import 'package:language_learning/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart';
@@ -29,6 +30,11 @@ class MyDatabase extends _$MyDatabase {
   int get schemaVersion => 1;
 
   Future<List<Phrase>> get allPhrases => select(phrases).get();
+
+  Future<List<Phrase>> getPhrases(Language language) {
+    return (select(phrases)..where((t) => t.language.equals(language.name)))
+        .get();
+  }
 
   Future<int> add(PhrasesCompanion phrase) {
     return into(phrases).insert(phrase);

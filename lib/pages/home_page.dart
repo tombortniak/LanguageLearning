@@ -19,9 +19,9 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                child: const Text(
+                child: Text(
                   'Language Learning',
-                  style: TextStyle(fontSize: 35.0),
+                  style: Theme.of(context).textTheme.headline1,
                   textAlign: TextAlign.center,
                 ),
                 margin: EdgeInsets.only(bottom: 75.0),

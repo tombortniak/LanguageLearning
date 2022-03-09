@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:language_learning/database/database.dart';
 
 import 'management_page.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:language_learning/components/menu_button.dart';
 import 'package:language_learning/components/language_card.dart';
+import 'package:language_learning/constants.dart';
+import 'package:provider/provider.dart';
 
 class LanguagePage extends StatelessWidget {
   const LanguagePage({Key? key}) : super(key: key);
@@ -11,50 +14,50 @@ class LanguagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Wrap(
-            spacing: 20.0,
-            children: [
-              LanguageCard(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ManagementPage(),
-                      ));
-                },
-                text: 'hiszpański',
-                image: Image.asset(
-                  'images/spain.png',
-                ),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 20.0,
+          runSpacing: 20.0,
+          children: [
+            LanguageCard(
+              onTap: () async {
+                var phrases =
+                    await Provider.of<MyDatabase>(context, listen: false)
+                        .getPhrases(Language.spanish);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ManagementPage(
+                          language: Language.spanish,
+                          specialCharacters: kSpanishSpecialCharacters,
+                          initialPhrases: phrases),
+                    ));
+              },
+              text: 'hiszpański',
+              image: Image.asset(
+                'images/spain.png',
               ),
-              LanguageCard(
-                onTap: () {},
-                text: 'angielski',
-                image: Image.asset(
-                  'images/great_britain.png',
-                ),
+            ),
+            LanguageCard(
+              onTap: () {},
+              text: 'angielski',
+              image: Image.asset(
+                'images/great_britain.png',
               ),
-              LanguageCard(
-                onTap: () {},
-                image: Icon(
-                  FontAwesomeIcons.plusCircle,
-                  size: 50.0,
-                ),
-              ),
-            ],
-          ),
-          MenuButton(
-            text: 'Powrót',
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-      )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,12 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
 import 'pages/home_page.dart';
-import 'components/menu_button.dart';
+import 'theme.dart';
 
 void main() {
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
   runApp(Provider<MyDatabase>(
     create: (context) => MyDatabase(),
     child: const LanguageLearningApp(),
@@ -19,13 +24,11 @@ class LanguageLearningApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final actions = Map.of(WidgetsApp.defaultActions)
-      ..remove(LogicalKeySet(LogicalKeyboardKey.space))
-      ..remove(LogicalKeySet(LogicalKeyboardKey.enter));
     return MaterialApp(
       title: 'Language Learning',
       home: HomePage(),
-      actions: actions,
+      darkTheme: LanguageLearningTheme.dark(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

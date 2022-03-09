@@ -164,6 +164,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "enum_to_string",
+      "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/enum_to_string-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "fake_async",
       "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0",
       "packageUri": "lib/",
@@ -224,10 +230,22 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "google_fonts",
+      "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/google_fonts-2.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "graphs",
       "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/graphs-2.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.13.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
     },
     {
       "name": "http_multi_server",
@@ -542,7 +560,7 @@
       "languageVersion": "2.16"
     }
   ],
-  "generated": "2022-03-05T18:12:12.524058Z",
+  "generated": "2022-03-08T22:38:07.696737Z",
   "generator": "pub",
   "generatorVersion": "2.16.0"
 }
