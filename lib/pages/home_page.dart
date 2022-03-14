@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:drift/drift.dart' as drift;
-import 'package:provider/provider.dart';
-import 'package:language_learning/database/database.dart';
-import 'language_page.dart';
-import '../components/menu_button.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'language_selection_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,44 +9,130 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: IntrinsicWidth(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Language Learning',
+            style: Theme.of(context).textTheme.headline1,
+            textAlign: TextAlign.center,
+          ),
+          Wrap(
+            runAlignment: WrapAlignment.center,
+            alignment: WrapAlignment.center,
+            spacing: 5.0,
+            runSpacing: 5.0,
             children: [
-              Container(
-                child: Text(
-                  'Language Learning',
-                  style: Theme.of(context).textTheme.headline1,
-                  textAlign: TextAlign.center,
+              ElevatedButton(
+                child: Container(
+                  width: 125.0,
+                  height: 125.0,
+                  margin: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const FaIcon(
+                        FontAwesomeIcons.book,
+                        size: 35.0,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        'Rozpocznij naukę',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                margin: EdgeInsets.only(bottom: 75.0),
+                onPressed: () {},
               ),
-              Container(
-                child: MenuButton(
-                    text: 'Rozpocznij naukę', onPressed: () async {}),
-                margin: EdgeInsets.symmetric(vertical: 20.0),
+              ElevatedButton(
+                child: Container(
+                  width: 125.0,
+                  height: 125.0,
+                  margin: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const FaIcon(
+                        FontAwesomeIcons.language,
+                        size: 35.0,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        'Zarządzaj językami',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LanguageSelectionPage(),
+                      ));
+                },
               ),
-              Container(
-                child: MenuButton(
-                    text: 'Zarządzaj językami',
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LanguagePage(),
-                          ));
-                    }),
-                margin: EdgeInsets.symmetric(vertical: 20.0),
+              ElevatedButton(
+                child: Container(
+                  width: 125.0,
+                  height: 125.0,
+                  margin: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const FaIcon(
+                        FontAwesomeIcons.hammer,
+                        size: 35.0,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        'Ustawienia',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {},
               ),
-              Container(
-                child: MenuButton(text: 'Wyjście', onPressed: () {}),
-                margin: EdgeInsets.symmetric(vertical: 20.0),
-              ),
+              ElevatedButton(
+                child: Container(
+                  width: 125.0,
+                  height: 125.0,
+                  margin: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const FaIcon(
+                        FontAwesomeIcons.doorOpen,
+                        size: 35.0,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        'Wyjście',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {},
+              )
             ],
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path/path.dart';
 
 class LanguageLearningTheme {
   static TextTheme lightTextTheme = TextTheme(
@@ -17,7 +18,7 @@ class LanguageLearningTheme {
 
   static TextTheme darkTextTheme = TextTheme(
     headline1: GoogleFonts.poppins(
-        fontSize: 30.0, fontWeight: FontWeight.w400, color: Colors.white),
+        fontSize: 35.0, fontWeight: FontWeight.w400, color: Colors.white),
     headline2: GoogleFonts.poppins(
         fontSize: 25.0, fontWeight: FontWeight.w500, color: Colors.white),
     headline3: GoogleFonts.poppins(
@@ -54,7 +55,7 @@ class LanguageLearningTheme {
         style: ElevatedButton.styleFrom(
           primary: Colors.deepPurple,
           textStyle: darkTextTheme.headline5,
-          padding: EdgeInsets.all(25.0),
+          padding: EdgeInsets.all(15.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(20.0),
@@ -76,6 +77,12 @@ class LanguageLearningTheme {
         focusColor: Colors.white,
         hoverColor: Colors.deepPurple,
       ),
+      tabBarTheme: TabBarTheme(
+        unselectedLabelStyle: darkTextTheme.headline5,
+        labelStyle: darkTextTheme.headline5,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.deepPurple, focusColor: Colors.grey),
     );
   }
 }

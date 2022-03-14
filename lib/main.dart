@@ -1,22 +1,36 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:language_learning/models/element_data.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
 import 'pages/home_page.dart';
 import 'theme.dart';
+import 'models/edited_field.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(Provider<MyDatabase>(
-    create: (context) => MyDatabase(),
-    child: const LanguageLearningApp(),
-    dispose: (context, db) => db.close(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<LanguageDatabase>(
+          create: (context) => LanguageDatabase(),
+          dispose: (context, db) => db.close(),
+        ),
+        Provider<EditedField>(
+          create: ((context) => EditedField()),
+        ),
+        Provider<ElementData>(
+          create: (context) => ElementData(),
+        ),
+      ],
+      child: const LanguageLearningApp(),
+    ),
+  );
 }
 
 class LanguageLearningApp extends StatelessWidget {
@@ -28,6 +42,7 @@ class LanguageLearningApp extends StatelessWidget {
       title: 'Language Learning',
       home: HomePage(),
       darkTheme: LanguageLearningTheme.dark(),
+      themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
     );
   }
