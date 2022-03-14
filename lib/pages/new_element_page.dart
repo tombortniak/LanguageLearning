@@ -49,7 +49,7 @@ class _NewElementPageState extends State<NewElementPage> {
                   flex: 6,
                   child: NewVerbForm(
                     language: widget.language,
-                    specialCharacters: kSpanishSpecialCharacters,
+                    specialCharacters: widget.specialCharacters,
                     onSubmittedForm: widget.onSubmittedForm,
                   ),
                 )

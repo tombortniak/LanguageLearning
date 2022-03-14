@@ -56,6 +56,10 @@ class _NewVerbFormState extends State<NewVerbForm> {
     }
   }
 
+  void _onSubmitButtonPressed() {
+    _onFieldSubmitted('');
+  }
+
   void _onFieldSubmitted(String value) async {
     var verbs = await Provider.of<LanguageDatabase>(context, listen: false)
         .getVerbs(widget.language);
@@ -160,7 +164,7 @@ class _NewVerbFormState extends State<NewVerbForm> {
           children: [
             if (showSpecialCharacters)
               AnimatedContainer(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 child: Wrap(
                   alignment: WrapAlignment.center,
                   children: [
@@ -200,7 +204,7 @@ class _NewVerbFormState extends State<NewVerbForm> {
                 Expanded(
                   child: _textFormFields[0],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20.0,
                 ),
                 Expanded(
@@ -208,7 +212,7 @@ class _NewVerbFormState extends State<NewVerbForm> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
                 Expanded(
@@ -222,7 +226,7 @@ class _NewVerbFormState extends State<NewVerbForm> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20.0,
                 ),
                 Expanded(
@@ -238,7 +242,7 @@ class _NewVerbFormState extends State<NewVerbForm> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10.0,
             ),
             Row(
@@ -255,23 +259,23 @@ class _NewVerbFormState extends State<NewVerbForm> {
                         showSpecialCharacters = !showSpecialCharacters;
                       });
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.keyboard,
                       color: Colors.white,
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15.0,
                 ),
                 Tooltip(
                   message: 'Zatwierdź',
                   child: FloatingActionButton(
-                    child: Icon(
+                    child: const Icon(
                       Icons.check,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: _onSubmitButtonPressed,
                   ),
                 ),
               ],

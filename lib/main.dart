@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:language_learning/models/element_data.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
@@ -23,9 +22,6 @@ void main() {
         ),
         Provider<EditedField>(
           create: ((context) => EditedField()),
-        ),
-        Provider<ElementData>(
-          create: (context) => ElementData(),
         ),
       ],
       child: const LanguageLearningApp(),

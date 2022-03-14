@@ -1,9 +1,9 @@
-import 'package:drift/native.dart';
 import 'package:language_learning/constants.dart';
+import 'dart:io';
+import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart';
-import 'dart:io';
 
 part 'database.g.dart';
 
@@ -12,6 +12,7 @@ class Phrases extends Table {
   TextColumn get language => text()();
   TextColumn get content => text()();
   TextColumn get translation => text()();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
 }
 
 class Verbs extends Table {
@@ -25,6 +26,7 @@ class Verbs extends Table {
   TextColumn get firstPersonPlural => text()();
   TextColumn get secondPersonPlural => text()();
   TextColumn get thirdPersonPlural => text()();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
 }
 
 class Words extends Table {
@@ -32,6 +34,13 @@ class Words extends Table {
   TextColumn get language => text()();
   TextColumn get content => text()();
   TextColumn get translation => text()();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
+}
+
+@DataClassName('Category')
+class Categories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
 }
 
 LazyDatabase _openConnection() {
@@ -42,7 +51,7 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [Words, Verbs, Phrases])
+@DriftDatabase(tables: [Words, Verbs, Phrases, Categories])
 class LanguageDatabase extends _$LanguageDatabase {
   LanguageDatabase() : super(_openConnection());
 

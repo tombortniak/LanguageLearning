@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:language_learning/models/edited_field.dart';
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
-import 'package:language_learning/components/new_element_form.dart';
 import 'package:language_learning/constants.dart';
-import 'package:drift/drift.dart' as drift;
 
 class LanguageManagementPage extends StatefulWidget {
   final LanguageElement languageElement;
@@ -27,7 +24,6 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  List<Phrase> phrases = [];
   List<dynamic> viewElements = [];
   List<dynamic> elements = [];
   final _editElementTextController = TextEditingController();
@@ -166,7 +162,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                           children: [
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                   child: SizedBox.shrink(),
                                 ),
                                 Expanded(
@@ -200,7 +196,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                                     controller: _searchTextController,
                                   ),
                                 ),
-                                Expanded(
+                                const Expanded(
                                   child: SizedBox.shrink(),
                                 ),
                               ],
@@ -215,11 +211,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                                         label: Text(
                                             '${kLanguageElementTranslations[widget.languageElement]}'),
                                       ),
-                                      DataColumn(
+                                      const DataColumn(
                                         label: Expanded(
                                             child: Text('tłumaczenie')),
                                       ),
-                                      DataColumn(
+                                      const DataColumn(
                                         label: Text(''),
                                       )
                                     ],
@@ -452,11 +448,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
               ),
             );
           } else if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Text('Przy pobieraniu danych wystąpił błąd'),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text('Trwa pobieranie danych'),
             );
           }

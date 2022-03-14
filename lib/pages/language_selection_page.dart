@@ -29,8 +29,9 @@ class LanguageSelectionPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LanguagePage(
+                    builder: (context) => const LanguagePage(
                       language: Language.spanish,
+                      specialCharacters: kSpanishSpecialCharacters,
                     ),
                   ),
                 );

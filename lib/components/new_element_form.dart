@@ -31,6 +31,10 @@ class _NewElementFormState extends State<NewElementForm> {
     return '${element[0].toUpperCase()}${element.substring(1)}';
   }
 
+  void _onSubmitButtonPressed() {
+    _onFieldSubmitted('');
+  }
+
   void _onFieldSubmitted(String value) async {
     var elements = [];
     String successMessage;
@@ -50,7 +54,7 @@ class _NewElementFormState extends State<NewElementForm> {
           content: Text(
               '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} już istnieje'),
           backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     } else {
@@ -76,7 +80,7 @@ class _NewElementFormState extends State<NewElementForm> {
             content: Text(
                 '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} $successMessage'),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -94,6 +98,15 @@ class _NewElementFormState extends State<NewElementForm> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    elementController.dispose();
+    translationController.dispose();
+    elementFocusNode.dispose();
+    translationFocusNode.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
@@ -103,7 +116,7 @@ class _NewElementFormState extends State<NewElementForm> {
         children: [
           if (showSpecialCharacters)
             AnimatedContainer(
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               child: Wrap(
                 alignment: WrapAlignment.center,
                 children: [
@@ -159,7 +172,7 @@ class _NewElementFormState extends State<NewElementForm> {
                   onFieldSubmitted: _onFieldSubmitted,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20.0,
               ),
               Expanded(
@@ -170,8 +183,8 @@ class _NewElementFormState extends State<NewElementForm> {
                   decoration: InputDecoration(
                     hintText: 'tłumaczenie',
                     hintStyle: Theme.of(context).textTheme.bodyText2,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.deepPurple),
                     ),
                   ),
                   style: Theme.of(context).textTheme.bodyText1,
@@ -185,7 +198,7 @@ class _NewElementFormState extends State<NewElementForm> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10.0,
           ),
           Row(
@@ -202,23 +215,23 @@ class _NewElementFormState extends State<NewElementForm> {
                       showSpecialCharacters = !showSpecialCharacters;
                     });
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.keyboard,
                     color: Colors.white,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15.0,
               ),
               Tooltip(
                 message: 'Zatwierdź',
                 child: FloatingActionButton(
-                  child: Icon(
+                  child: const Icon(
                     Icons.check,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: _onSubmitButtonPressed,
                 ),
               ),
             ],

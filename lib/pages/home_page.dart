@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                 child: Container(
                   width: 125.0,
                   height: 125.0,
-                  margin: EdgeInsets.all(5.0),
+                  margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -84,7 +84,7 @@ class HomePage extends StatelessWidget {
                 child: Container(
                   width: 125.0,
                   height: 125.0,
-                  margin: EdgeInsets.all(5.0),
+                  margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -109,7 +109,7 @@ class HomePage extends StatelessWidget {
                 child: Container(
                   width: 125.0,
                   height: 125.0,
-                  margin: EdgeInsets.all(5.0),
+                  margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
