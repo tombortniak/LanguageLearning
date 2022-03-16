@@ -24,13 +24,13 @@ class LanguageLearningTheme {
     headline3: GoogleFonts.poppins(
         fontSize: 20.0, fontWeight: FontWeight.w400, color: Colors.white),
     headline4: GoogleFonts.poppins(
-        fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
+        fontSize: 17.0, fontWeight: FontWeight.w500, color: Colors.white),
     headline5: GoogleFonts.poppins(
         fontSize: 15.0, fontWeight: FontWeight.w500, color: Colors.white),
     bodyText1: GoogleFonts.poppins(
-        fontSize: 15.0, fontWeight: FontWeight.w400, color: Colors.white),
+        fontSize: 14.0, fontWeight: FontWeight.w400, color: Colors.white),
     bodyText2: GoogleFonts.poppins(
-        fontSize: 15.0, fontWeight: FontWeight.w300, color: Colors.grey),
+        fontSize: 14.0, fontWeight: FontWeight.w300, color: Colors.grey),
   );
 
   static ThemeData light() {
@@ -45,7 +45,7 @@ class LanguageLearningTheme {
       brightness: Brightness.dark,
       textTheme: darkTextTheme,
       appBarTheme: AppBarTheme(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         actionsIconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: darkTextTheme.headline3,
         toolbarTextStyle: darkTextTheme.headline3,
@@ -53,10 +53,10 @@ class LanguageLearningTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: Colors.deepPurple,
+          primary: Colors.black,
           textStyle: darkTextTheme.headline5,
-          padding: EdgeInsets.all(15.0),
-          shape: RoundedRectangleBorder(
+          padding: const EdgeInsets.all(15.0),
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(20.0),
             ),
@@ -65,15 +65,15 @@ class LanguageLearningTheme {
       ),
       dataTableTheme: DataTableThemeData(
         dataTextStyle: darkTextTheme.bodyText1,
-        headingTextStyle: darkTextTheme.headline4,
+        headingTextStyle: darkTextTheme.headline5,
       ),
       snackBarTheme: SnackBarThemeData(
         contentTextStyle: darkTextTheme.bodyText1,
       ),
-      textSelectionTheme: TextSelectionThemeData(
+      textSelectionTheme: const TextSelectionThemeData(
         cursorColor: Colors.white,
       ),
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         focusColor: Colors.white,
         hoverColor: Colors.deepPurple,
       ),
@@ -81,7 +81,7 @@ class LanguageLearningTheme {
         unselectedLabelStyle: darkTextTheme.headline5,
         labelStyle: darkTextTheme.headline5,
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Colors.deepPurple, focusColor: Colors.grey),
     );
   }

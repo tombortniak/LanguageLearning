@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
 import 'package:language_learning/constants.dart';
-import 'package:language_learning/database/database.dart';
 import 'package:language_learning/pages/language_management_page.dart';
-import 'package:tuple/tuple.dart';
 import 'new_element_page.dart';
 
 class LanguagePage extends StatefulWidget {
@@ -22,18 +19,6 @@ class LanguagePage extends StatefulWidget {
 class _LanguagePageState extends State<LanguagePage>
     with TickerProviderStateMixin {
   late TabController _tabController;
-
-  Future<Tuple3<List<Word>, List<Verb>, List<Phrase>>>
-      getLanguageContent() async {
-    var words = await Provider.of<LanguageDatabase>(context, listen: false)
-        .getWords(widget.language);
-    var verbs = await Provider.of<LanguageDatabase>(context, listen: false)
-        .getVerbs(widget.language);
-    var phrases = await Provider.of<LanguageDatabase>(context, listen: false)
-        .getPhrases(widget.language);
-
-    return Tuple3(words, verbs, phrases);
-  }
 
   @override
   void initState() {
@@ -78,13 +63,11 @@ class _LanguagePageState extends State<LanguagePage>
                     context: context,
                     builder: (context) {
                       return NewElementPage(
-                          languageElement:
-                              LanguageElement.values[_tabController.index],
-                          language: widget.language,
-                          specialCharacters: widget.specialCharacters,
-                          onSubmittedForm: () {
-                            setState(() {});
-                          });
+                        languageElement:
+                            LanguageElement.values[_tabController.index],
+                        language: widget.language,
+                        specialCharacters: widget.specialCharacters,
+                      );
                     },
                   );
                 },
@@ -100,13 +83,15 @@ class _LanguagePageState extends State<LanguagePage>
                 specialCharacters: widget.specialCharacters,
               ),
               LanguageManagementPage(
-                  languageElement: LanguageElement.verb,
-                  language: widget.language,
-                  specialCharacters: widget.specialCharacters),
+                languageElement: LanguageElement.verb,
+                language: widget.language,
+                specialCharacters: widget.specialCharacters,
+              ),
               LanguageManagementPage(
-                  languageElement: LanguageElement.phrase,
-                  language: widget.language,
-                  specialCharacters: widget.specialCharacters),
+                languageElement: LanguageElement.phrase,
+                language: widget.language,
+                specialCharacters: widget.specialCharacters,
+              ),
             ],
           ),
         );

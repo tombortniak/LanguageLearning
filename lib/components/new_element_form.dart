@@ -1,18 +1,17 @@
 import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
 import 'package:language_learning/database/database.dart';
+import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'package:language_learning/constants.dart';
 
 class NewElementForm extends StatefulWidget {
-  final onSubmittedForm;
   final LanguageElement languageElement;
   final Language language;
   final List<String> specialCharacters;
   NewElementForm(
       {required this.languageElement,
       required this.language,
-      required this.onSubmittedForm,
       this.specialCharacters = const []});
 
   @override
@@ -36,59 +35,73 @@ class _NewElementFormState extends State<NewElementForm> {
   }
 
   void _onFieldSubmitted(String value) async {
-    var elements = [];
     String successMessage;
     if (widget.languageElement == LanguageElement.word) {
-      elements = await Provider.of<LanguageDatabase>(context, listen: false)
-          .getWords(widget.language);
       successMessage = 'zostało dodane';
     } else {
-      elements = await Provider.of<LanguageDatabase>(context, listen: false)
-          .getPhrases(widget.language);
       successMessage = 'została dodana';
     }
 
-    if (elements.any((element) => element.content == elementController.text)) {
+    if (elementController.text.isEmpty || translationController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(
-              '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} już istnieje'),
+            'Wszystkie pola muszą być wypełnione',
+            textAlign: TextAlign.center,
+          ),
           backgroundColor: Colors.redAccent,
-          duration: const Duration(seconds: 2),
+          duration: Duration(seconds: 2),
         ),
       );
     } else {
-      if (_formKey.currentState!.validate()) {
-        if (widget.languageElement == LanguageElement.word) {
-          var word = WordsCompanion(
-              language: d.Value(widget.language.name),
-              content: d.Value(elementController.text),
-              translation: d.Value(translationController.text));
-          await Provider.of<LanguageDatabase>(context, listen: false)
-              .addWord(word);
-        } else {
-          var phrase = PhrasesCompanion(
-              language: d.Value(widget.language.name),
-              content: d.Value(elementController.text),
-              translation: d.Value(translationController.text));
-          await Provider.of<LanguageDatabase>(context, listen: false)
-              .addPhrase(phrase);
-        }
-        setState(() {});
+      if (context
+          .read<LanguageElementData>()
+          .contains(elementController.text, widget.languageElement)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} $successMessage'),
-            backgroundColor: Colors.green,
+              '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.redAccent,
             duration: const Duration(seconds: 2),
           ),
         );
+      } else {
+        if (_formKey.currentState!.validate()) {
+          if (widget.languageElement == LanguageElement.word) {
+            var word = WordsCompanion(
+                language: d.Value(widget.language.name),
+                content: d.Value(elementController.text),
+                translation: d.Value(translationController.text));
+            await context
+                .read<LanguageElementData>()
+                .addElement(word, LanguageElement.word);
+          } else {
+            var phrase = PhrasesCompanion(
+                language: d.Value(widget.language.name),
+                content: d.Value(elementController.text),
+                translation: d.Value(translationController.text));
+            await context
+                .read<LanguageElementData>()
+                .addElement(phrase, LanguageElement.phrase);
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} $successMessage',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+        elementController.clear();
+        translationController.clear();
+        elementFocusNode.requestFocus();
       }
-      elementController.clear();
-      translationController.clear();
-      elementFocusNode.requestFocus();
     }
-    widget.onSubmittedForm();
   }
 
   @override
@@ -163,12 +176,6 @@ class _NewElementFormState extends State<NewElementForm> {
                     hintStyle: Theme.of(context).textTheme.bodyText2,
                   ),
                   style: Theme.of(context).textTheme.bodyText1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Pole nie może być puste';
-                    }
-                    return null;
-                  },
                   onFieldSubmitted: _onFieldSubmitted,
                 ),
               ),
@@ -177,9 +184,8 @@ class _NewElementFormState extends State<NewElementForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  textInputAction: TextInputAction.go,
+                  textInputAction: TextInputAction.next,
                   controller: translationController,
-                  onFieldSubmitted: _onFieldSubmitted,
                   decoration: InputDecoration(
                     hintText: 'tłumaczenie',
                     hintStyle: Theme.of(context).textTheme.bodyText2,
@@ -188,12 +194,7 @@ class _NewElementFormState extends State<NewElementForm> {
                     ),
                   ),
                   style: Theme.of(context).textTheme.bodyText1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Tłumaczenie nie może być puste';
-                    }
-                    return null;
-                  },
+                  onFieldSubmitted: _onFieldSubmitted,
                 ),
               ),
             ],

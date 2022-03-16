@@ -8,13 +8,11 @@ class NewElementPage extends StatefulWidget {
   final Language language;
   final List<String> specialCharacters;
   final LanguageElement languageElement;
-  final onSubmittedForm;
 
   const NewElementPage(
       {Key? key,
       required this.languageElement,
       required this.language,
-      required this.onSubmittedForm,
       required this.specialCharacters})
       : super(key: key);
 
@@ -26,6 +24,7 @@ class _NewElementPageState extends State<NewElementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('${kLanguageElementTranslations[widget.languageElement]}'),
@@ -50,7 +49,6 @@ class _NewElementPageState extends State<NewElementPage> {
                   child: NewVerbForm(
                     language: widget.language,
                     specialCharacters: widget.specialCharacters,
-                    onSubmittedForm: widget.onSubmittedForm,
                   ),
                 )
               : Expanded(
@@ -59,7 +57,6 @@ class _NewElementPageState extends State<NewElementPage> {
                     language: widget.language,
                     languageElement: widget.languageElement,
                     specialCharacters: widget.specialCharacters,
-                    onSubmittedForm: widget.onSubmittedForm,
                   ),
                 ),
           const Expanded(

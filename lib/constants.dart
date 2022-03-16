@@ -14,3 +14,5 @@ const kLanguageElementTranslations = {
 enum Language { spanish, english }
 
 enum LanguageElement { word, verb, phrase }
+
+enum PopupAction { edit, delete }

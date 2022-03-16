@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:language_learning/models/language_element_data.dart';
+import 'package:language_learning/pages/splash_page.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
@@ -21,8 +23,11 @@ void main() {
           dispose: (context, db) => db.close(),
         ),
         Provider<EditedField>(
-          create: ((context) => EditedField()),
+          create: (context) => EditedField(),
         ),
+        ChangeNotifierProvider<LanguageElementData>(
+          create: (context) => LanguageElementData(context: context),
+        )
       ],
       child: const LanguageLearningApp(),
     ),
@@ -36,7 +41,7 @@ class LanguageLearningApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Language Learning',
-      home: HomePage(),
+      home: const SplashPage(),
       darkTheme: LanguageLearningTheme.dark(),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,

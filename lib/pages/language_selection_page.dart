@@ -4,7 +4,7 @@ import 'package:language_learning/components/language_card.dart';
 import 'package:language_learning/constants.dart';
 
 class LanguageSelectionPage extends StatelessWidget {
-  const LanguageSelectionPage({Key? key}) : super(key: key);
+  LanguageSelectionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

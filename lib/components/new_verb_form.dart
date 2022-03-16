@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:language_learning/constants.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:language_learning/database/database.dart';
+import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 
 class NewVerbForm extends StatefulWidget {
@@ -63,44 +64,63 @@ class _NewVerbFormState extends State<NewVerbForm> {
   void _onFieldSubmitted(String value) async {
     var verbs = await Provider.of<LanguageDatabase>(context, listen: false)
         .getVerbs(widget.language);
-    if (verbs.any((element) => element.content == _textControllers[0].text)) {
+    if (_textControllers.any((element) => element.text.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Czasownik już istnieje'),
+          content: Text(
+            'Wszystkie pola muszą być wypełnione',
+            textAlign: TextAlign.center,
+          ),
           backgroundColor: Colors.redAccent,
           duration: Duration(seconds: 2),
         ),
       );
     } else {
-      if (_formKey.currentState!.validate()) {
-        var verb = VerbsCompanion(
-          language: drift.Value(widget.language.name),
-          content: drift.Value(_textControllers[0].text),
-          translation: drift.Value(_textControllers[1].text),
-          firstPersonSingular: drift.Value(_textControllers[2].text),
-          secondPersonSingular: drift.Value(_textControllers[3].text),
-          thirdPersonSingular: drift.Value(_textControllers[4].text),
-          firstPersonPlural: drift.Value(_textControllers[5].text),
-          secondPersonPlural: drift.Value(_textControllers[6].text),
-          thirdPersonPlural: drift.Value(_textControllers[7].text),
-        );
-        await Provider.of<LanguageDatabase>(context, listen: false)
-            .addVerb(verb);
-        setState(() {});
+      if (verbs.any((element) => element.content == _textControllers[0].text)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Czasownik został dodany'),
-            backgroundColor: Colors.green,
+            content: Text(
+              'Czasownik już istnieje',
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.redAccent,
             duration: Duration(seconds: 2),
           ),
         );
+      } else {
+        if (_formKey.currentState!.validate()) {
+          var verb = VerbsCompanion(
+            language: drift.Value(widget.language.name),
+            content: drift.Value(_textControllers[0].text),
+            translation: drift.Value(_textControllers[1].text),
+            firstPersonSingular: drift.Value(_textControllers[2].text),
+            secondPersonSingular: drift.Value(_textControllers[3].text),
+            thirdPersonSingular: drift.Value(_textControllers[4].text),
+            firstPersonPlural: drift.Value(_textControllers[5].text),
+            secondPersonPlural: drift.Value(_textControllers[6].text),
+            thirdPersonPlural: drift.Value(_textControllers[7].text),
+          );
+          await context
+              .read<LanguageElementData>()
+              .addElement(verb, LanguageElement.verb);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Czasownik został dodany',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        for (var controller in _textControllers) {
+          controller.clear();
+        }
+        _focusNodes[0].requestFocus();
       }
-      for (var controller in _textControllers) {
-        controller.clear();
-      }
-      _focusNodes[0].requestFocus();
+      widget.onSubmittedForm();
     }
-    widget.onSubmittedForm();
   }
 
   List<Widget> _buildFormFields() {
@@ -137,12 +157,6 @@ class _NewVerbFormState extends State<NewVerbForm> {
               hintStyle: Theme.of(context).textTheme.bodyText2,
             ),
             style: Theme.of(context).textTheme.bodyText1,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return validatorText;
-              }
-              return null;
-            },
             onFieldSubmitted: _onFieldSubmitted,
           ),
         ),
