@@ -27,13 +27,13 @@ class _ElementCardState extends State<ElementCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10.0),
       child: Row(
         children: [
-          Expanded(child: widget.content),
-          Expanded(child: widget.translation),
+          Expanded(flex: 3, child: widget.content),
+          Expanded(flex: 3, child: widget.translation),
           widget.showOptions
               ? Expanded(
+                  flex: 1,
                   child: PopupMenuButton(
                     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                       PopupMenuItem(

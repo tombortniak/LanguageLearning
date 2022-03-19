@@ -1,18 +1,22 @@
-import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+import 'package:language_learning/constants.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
-import 'package:language_learning/constants.dart';
 
 class NewElementForm extends StatefulWidget {
-  final LanguageElement languageElement;
   final Language language;
+  final LanguageElement languageElement;
   final List<String> specialCharacters;
-  NewElementForm(
-      {required this.languageElement,
+
+  const NewElementForm(
+      {Key? key,
       required this.language,
-      this.specialCharacters = const []});
+      required this.languageElement,
+      this.specialCharacters = const []})
+      : super(key: key);
 
   @override
   State<NewElementForm> createState() => _NewElementFormState();
@@ -20,29 +24,58 @@ class NewElementForm extends StatefulWidget {
 
 class _NewElementFormState extends State<NewElementForm> {
   final _formKey = GlobalKey<FormState>();
-  final elementController = TextEditingController();
-  final translationController = TextEditingController();
-  final elementFocusNode = FocusNode();
-  final translationFocusNode = FocusNode();
+  List<TextEditingController> _textControllers =
+      List.generate(8, (index) => TextEditingController());
+  List<FocusNode> _focusNodes = List.generate(8, (index) => FocusNode());
+  List<Widget> _textFormFields = [];
   bool showSpecialCharacters = false;
+  int _lastFocusedFieldIndex = 0;
+  int? textForms;
+  String? title;
 
-  String capitalizeFirstLetter(String element) {
-    return '${element[0].toUpperCase()}${element.substring(1)}';
+  @override
+  void initState() {
+    super.initState();
+    if (widget.languageElement == LanguageElement.verb) {
+      textForms = 8;
+      title = 'Nowy czasownik';
+    } else {
+      textForms = 2;
+      if (widget.languageElement == LanguageElement.word) {
+        title = 'Nowe słowo';
+      } else {
+        title = 'Nowa fraza';
+      }
+    }
+
+    _focusNodes = List.generate(textForms!, (index) => FocusNode());
+    _textControllers =
+        List.generate(textForms!, (index) => TextEditingController());
+
+    for (int i = 0; i < textForms!; i++) {
+      _focusNodes[i].addListener(() {
+        setState(() {
+          _lastFocusedFieldIndex = i;
+        });
+      });
+    }
+    _focusNodes.first.requestFocus();
   }
 
-  void _onSubmitButtonPressed() {
-    _onFieldSubmitted('');
+  @override
+  void dispose() {
+    super.dispose();
+    for (var controller in _textControllers) {
+      controller.dispose();
+    }
+
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
   }
 
   void _onFieldSubmitted(String value) async {
-    String successMessage;
-    if (widget.languageElement == LanguageElement.word) {
-      successMessage = 'zostało dodane';
-    } else {
-      successMessage = 'została dodana';
-    }
-
-    if (elementController.text.isEmpty || translationController.text.isEmpty) {
+    if (_textControllers.any((element) => element.text.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -56,188 +89,238 @@ class _NewElementFormState extends State<NewElementForm> {
     } else {
       if (context
           .read<LanguageElementData>()
-          .contains(elementController.text, widget.languageElement)) {
+          .contains(_textControllers[0].text, widget.languageElement)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
+              '${_textControllers[0].text} już istnieje',
               textAlign: TextAlign.center,
             ),
             backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 2),
+            duration: Duration(seconds: 2),
           ),
         );
       } else {
         if (_formKey.currentState!.validate()) {
+          var element;
           if (widget.languageElement == LanguageElement.word) {
-            var word = WordsCompanion(
-                language: d.Value(widget.language.name),
-                content: d.Value(elementController.text),
-                translation: d.Value(translationController.text));
-            await context
-                .read<LanguageElementData>()
-                .addElement(word, LanguageElement.word);
+            element = WordsCompanion(
+                language: drift.Value(widget.language.name),
+                content: drift.Value(_textControllers[0].text),
+                translation: drift.Value(_textControllers[1].text));
+          } else if (widget.languageElement == LanguageElement.phrase) {
+            element = PhrasesCompanion(
+                language: drift.Value(widget.language.name),
+                content: drift.Value(_textControllers[0].text),
+                translation: drift.Value(_textControllers[1].text));
           } else {
-            var phrase = PhrasesCompanion(
-                language: d.Value(widget.language.name),
-                content: d.Value(elementController.text),
-                translation: d.Value(translationController.text));
-            await context
-                .read<LanguageElementData>()
-                .addElement(phrase, LanguageElement.phrase);
+            element = VerbsCompanion(
+              language: drift.Value(widget.language.name),
+              content: drift.Value(_textControllers[0].text),
+              translation: drift.Value(_textControllers[1].text),
+              firstPersonSingular: drift.Value(_textControllers[2].text),
+              secondPersonSingular: drift.Value(_textControllers[3].text),
+              thirdPersonSingular: drift.Value(_textControllers[4].text),
+              firstPersonPlural: drift.Value(_textControllers[5].text),
+              secondPersonPlural: drift.Value(_textControllers[6].text),
+              thirdPersonPlural: drift.Value(_textControllers[7].text),
+            );
           }
+          await context
+              .read<LanguageElementData>()
+              .addElement(element, widget.languageElement);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              behavior: SnackBarBehavior.floating,
               content: Text(
-                '${capitalizeFirstLetter(kLanguageElementTranslations[widget.languageElement]!)} $successMessage',
+                '${_textControllers[0].text} zostało dodane',
                 textAlign: TextAlign.center,
               ),
               backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
+              duration: Duration(seconds: 2),
             ),
           );
         }
-        elementController.clear();
-        translationController.clear();
-        elementFocusNode.requestFocus();
+        for (var controller in _textControllers) {
+          controller.clear();
+        }
+        _focusNodes[0].requestFocus();
       }
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    elementFocusNode.requestFocus();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    elementController.dispose();
-    translationController.dispose();
-    elementFocusNode.dispose();
-    translationFocusNode.dispose();
+  List<Widget> _buildFormFields() {
+    List<Widget> widgets = [];
+    int personConjugation = 1;
+    String hintText;
+    TextInputAction textInputAction = TextInputAction.next;
+    double width = MediaQuery.of(context).size.width * 0.8;
+    for (int i = 0; i < textForms!; i++) {
+      if (i == 0) {
+        hintText = '${kLanguageElementTranslations[widget.languageElement]}';
+      } else if (i == 1) {
+        hintText = 'tłumaczenie';
+      } else {
+        width = MediaQuery.of(context).size.width * 0.4;
+        if (i == 7) {
+          textInputAction = TextInputAction.done;
+        }
+        hintText = '$personConjugation. osoba';
+        personConjugation++;
+        if (personConjugation == 4) {
+          personConjugation = 1;
+        }
+      }
+      widgets.add(
+        FocusTraversalOrder(
+          order: NumericFocusOrder((i + 1).toDouble()),
+          child: ConstrainedBox(
+            constraints: BoxConstraints.tight(
+              Size(width, 60),
+            ),
+            child: TextFormField(
+              textInputAction: textInputAction,
+              controller: _textControllers[i],
+              focusNode: _focusNodes[i],
+              decoration: InputDecoration(
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurple),
+                ),
+                hintText: hintText,
+                hintStyle: Theme.of(context).textTheme.bodyText2,
+              ),
+              style: Theme.of(context).textTheme.bodyText1,
+              onFieldSubmitted: (value) {
+                if (Platform.isWindows ||
+                    Platform.isMacOS ||
+                    Platform.isLinux) {
+                  _onFieldSubmitted(value);
+                  _focusNodes.first.requestFocus();
+                }
+              },
+            ),
+          ),
+        ),
+      );
+    }
+    return widgets;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      autovalidateMode: AutovalidateMode.disabled,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (showSpecialCharacters)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                children: [
-                  for (int i = 0; i < widget.specialCharacters.length; ++i)
-                    InkWell(
-                      child: Container(
-                        child: Center(
-                          child: Text(
-                            widget.specialCharacters[i],
-                            style: Theme.of(context).textTheme.headline4,
+    _textFormFields = _buildFormFields();
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.disabled,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: const SizedBox(),
+                    ),
+                    Expanded(
+                      child: Text(
+                        title!,
+                        style: Theme.of(context).textTheme.headline5,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.close_rounded,
                           ),
-                        ),
-                        width: 30.0,
-                        height: 30.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
                       ),
-                      onTap: () {
-                        elementFocusNode.requestFocus();
-                        elementController.text += widget.specialCharacters[i];
-                        elementController.selection =
-                            TextSelection.fromPosition(
-                          TextPosition(offset: elementController.text.length),
-                        );
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: _textFormFields[0],
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: _textFormFields[1],
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              if (widget.languageElement == LanguageElement.verb)
+                Align(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text('l. pojedyncza',
+                              style: Theme.of(context).textTheme.headline5),
+                          _textFormFields[2],
+                          _textFormFields[3],
+                          _textFormFields[4],
+                        ],
+                      ),
+                      SizedBox(
+                        width: 12.0,
+                      ),
+                      Column(
+                        children: [
+                          Text('l. mnoga',
+                              style: Theme.of(context).textTheme.headline5),
+                          _textFormFields[5],
+                          _textFormFields[6],
+                          _textFormFields[7],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Tooltip(
+                  message: 'Zatwierdź',
+                  child: Center(
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        _onFieldSubmitted('');
                       },
-                    ),
-                ],
-              ),
-            ),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  textInputAction: TextInputAction.next,
-                  controller: elementController,
-                  focusNode: elementFocusNode,
-                  decoration: InputDecoration(
-                    focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepPurple),
-                    ),
-                    hintText:
-                        kLanguageElementTranslations[widget.languageElement],
-                    hintStyle: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  style: Theme.of(context).textTheme.bodyText1,
-                  onFieldSubmitted: _onFieldSubmitted,
-                ),
-              ),
-              const SizedBox(
-                width: 20.0,
-              ),
-              Expanded(
-                child: TextFormField(
-                  textInputAction: TextInputAction.next,
-                  controller: translationController,
-                  decoration: InputDecoration(
-                    hintText: 'tłumaczenie',
-                    hintStyle: Theme.of(context).textTheme.bodyText2,
-                    focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepPurple),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  style: Theme.of(context).textTheme.bodyText1,
-                  onFieldSubmitted: _onFieldSubmitted,
                 ),
               ),
+              SizedBox(
+                height: 25.0,
+              )
             ],
           ),
-          const SizedBox(
-            height: 10.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Tooltip(
-                message: showSpecialCharacters
-                    ? 'Ukryj znaki specjalne'
-                    : 'Pokaż znaki specjalne',
-                child: FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      elementFocusNode.requestFocus();
-                      showSpecialCharacters = !showSpecialCharacters;
-                    });
-                  },
-                  child: const Icon(
-                    Icons.keyboard,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 15.0,
-              ),
-              Tooltip(
-                message: 'Zatwierdź',
-                child: FloatingActionButton(
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                  ),
-                  onPressed: _onSubmitButtonPressed,
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

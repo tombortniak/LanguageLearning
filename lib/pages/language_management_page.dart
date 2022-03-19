@@ -92,14 +92,13 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
           }
           return Scaffold(
             body: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-                  width: width * .6,
+                  margin: EdgeInsets.symmetric(vertical: 10.0),
+                  width: width * 0.7,
                   child: TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10.0),
+                      contentPadding: EdgeInsets.all(5.0),
                       focusedBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.deepPurple),
@@ -125,78 +124,68 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                     controller: _searchTextController,
                   ),
                 ),
+                ElementCard(
+                  showOptions: false,
+                  content: Text(
+                      '${kLanguageElementTranslations[widget.languageElement]}',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headline5),
+                  translation: Text('tłumaczenie',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headline5),
+                ),
+                Divider(),
                 Expanded(
                   child: ListView.separated(
                     separatorBuilder: ((context, index) => const Divider()),
                     itemCount: languageElements.length,
                     itemBuilder: (BuildContext context, index) {
-                      if (index == 0) {
-                        return ElementCard(
-                          showOptions: false,
-                          content: Text(
-                              '${kLanguageElementTranslations[widget.languageElement]}',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headline5),
-                          translation: Text('tłumaczenie',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headline5),
-                        );
-                      } else {
-                        return Dismissible(
-                          background: Container(
-                            color: color,
-                            alignment: AlignmentDirectional.centerStart,
-                            child: Icon(Icons.delete),
-                          ),
-                          secondaryBackground: Container(
-                            color: Colors.red,
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: Icon(Icons.delete),
-                          ),
-                          onDismissed: (direction) {
-                            if (direction == DismissDirection.startToEnd) {
+                      return Dismissible(
+                        background: Container(
+                          color: color,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Icon(Icons.delete),
+                        ),
+                        secondaryBackground: Container(
+                          color: Colors.red,
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: Icon(Icons.delete),
+                        ),
+                        onDismissed: (direction) {
+                          languageElementData.removeElement(
+                            languageElements[index],
+                            widget.languageElement,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.blueAccent,
+                              content: Text(
+                                'Usunięto ${languageElements[index].content}',
+                                textAlign: TextAlign.center,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        key: UniqueKey(),
+                        child: ElementCard(
+                            onEditTapped: () {
+                              setEditedIndex(index);
+                            },
+                            onDeleteTapped: () {
                               languageElementData.removeElement(
-                                languageElements[index],
-                                widget.languageElement,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.blueAccent,
-                                  content: Text(
-                                    'Usunięto ${languageElements[index].content}',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            } else if (direction ==
-                                DismissDirection.endToStart) {
-                              setState(() {
-                                setEditedIndex(index);
-                              });
-                            }
-                          },
-                          key: ValueKey(languageElements[index].content),
-                          child: ElementCard(
-                              onEditTapped: () {
-                                setEditedIndex(index);
-                              },
-                              onDeleteTapped: () {
-                                languageElementData.removeElement(
-                                    languageElements[index],
-                                    widget.languageElement);
-                              },
-                              showOptions: true,
-                              content: Text(languageElements[index].content,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyText1),
-                              translation: Text(
-                                  languageElements[index].translation,
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      Theme.of(context).textTheme.bodyText1)),
-                        );
-                      }
+                                  languageElements[index],
+                                  widget.languageElement);
+                            },
+                            showOptions: true,
+                            content: Text(languageElements[index].content,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyText1),
+                            translation: Text(
+                                languageElements[index].translation,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyText1)),
+                      );
                     },
                   ),
                 )

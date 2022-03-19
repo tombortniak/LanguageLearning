@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:language_learning/models/language_element_data.dart';
+import 'package:language_learning/pages/home_page.dart';
 import 'package:language_learning/pages/splash_page.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
-import 'pages/home_page.dart';
 import 'theme.dart';
 import 'models/edited_field.dart';
 

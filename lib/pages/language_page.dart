@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:language_learning/components/new_element_form.dart';
 import 'package:language_learning/constants.dart';
 import 'package:language_learning/pages/language_management_page.dart';
-import 'new_element_page.dart';
 
 class LanguagePage extends StatefulWidget {
   final Language language;
@@ -60,14 +59,26 @@ class _LanguagePageState extends State<LanguagePage>
                 icon: const Icon(Icons.add),
                 onPressed: () {
                   showModalBottomSheet(
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(25.0)),
+                    ),
+                    isScrollControlled: true,
                     context: context,
                     builder: (context) {
-                      return NewElementPage(
-                        languageElement:
-                            LanguageElement.values[_tabController.index],
-                        language: widget.language,
-                        specialCharacters: widget.specialCharacters,
-                      );
+                      LanguageElement languageElement;
+                      if (_tabController.index == 1) {
+                        languageElement = LanguageElement.verb;
+                      } else {
+                        if (_tabController.index == 0) {
+                          languageElement = LanguageElement.word;
+                        } else {
+                          languageElement = LanguageElement.phrase;
+                        }
+                      }
+                      return NewElementForm(
+                          languageElement: languageElement,
+                          language: widget.language);
                     },
                   );
                 },
