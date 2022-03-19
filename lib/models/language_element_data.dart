@@ -46,24 +46,23 @@ class LanguageElementData extends ChangeNotifier {
           .updateWord(element);
       languageElements.item1[languageElements.item1
           .indexWhere((e) => e.id == (element as Word).id)] = element as Word;
-      viewLanguageElements.item1[languageElements.item1
-          .indexWhere((e) => e.id == (element as Word).id)] = element as Word;
+      viewLanguageElements.item1[viewLanguageElements.item1
+          .indexWhere((e) => e.id == element.id)] = element;
     } else if (languageElement == LanguageElement.verb) {
       await Provider.of<LanguageDatabase>(context, listen: false)
           .updateVerb(element);
       languageElements.item2[languageElements.item2
           .indexWhere((e) => e.id == (element as Verb).id)] = element as Verb;
-      viewLanguageElements.item2[languageElements.item2
-          .indexWhere((e) => e.id == (element as Verb).id)] = element as Verb;
+      viewLanguageElements.item2[viewLanguageElements.item2
+          .indexWhere((e) => e.id == element.id)] = element;
     } else {
       await Provider.of<LanguageDatabase>(context, listen: false)
           .updatePhrase(element);
       languageElements.item3[languageElements.item3
               .indexWhere((e) => e.id == (element as Phrase).id)] =
           element as Phrase;
-      viewLanguageElements.item3[languageElements.item3
-              .indexWhere((e) => e.id == (element as Phrase).id)] =
-          element as Phrase;
+      viewLanguageElements.item3[viewLanguageElements.item3
+          .indexWhere((e) => e.id == element.id)] = element;
     }
     notifyListeners();
   }

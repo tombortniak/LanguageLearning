@@ -6,33 +6,34 @@ import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tuple/tuple.dart';
 
-class NewElementForm extends StatefulWidget {
+class ElementForm extends StatefulWidget {
   final Language language;
   final LanguageElement languageElement;
+  dynamic initialValue;
   final List<String> specialCharacters;
 
-  const NewElementForm(
+  ElementForm(
       {Key? key,
       required this.language,
       required this.languageElement,
+      this.initialValue,
       this.specialCharacters = const []})
       : super(key: key);
 
   @override
-  State<NewElementForm> createState() => _NewElementFormState();
+  State<ElementForm> createState() => _ElementFormState();
 }
 
-class _NewElementFormState extends State<NewElementForm> {
+class _ElementFormState extends State<ElementForm> {
   final _formKey = GlobalKey<FormState>();
   List<TextEditingController> _textControllers =
       List.generate(8, (index) => TextEditingController());
   List<FocusNode> _focusNodes = List.generate(8, (index) => FocusNode());
   List<Widget> _textFormFields = [];
   bool showSpecialCharacters = false;
-  int _lastFocusedFieldIndex = 0;
   int? textForms;
-  String? title;
   FToast? fToast;
 
   @override
@@ -40,28 +41,20 @@ class _NewElementFormState extends State<NewElementForm> {
     super.initState();
     fToast = FToast();
     fToast?.init(context);
-
     if (widget.languageElement == LanguageElement.verb) {
       textForms = 8;
-      title = 'Nowy czasownik';
     } else {
       textForms = 2;
-      if (widget.languageElement == LanguageElement.word) {
-        title = 'Nowe słowo';
-      } else {
-        title = 'Nowa fraza';
-      }
     }
-
     _focusNodes = List.generate(textForms!, (index) => FocusNode());
     _textControllers =
         List.generate(textForms!, (index) => TextEditingController());
 
     for (int i = 0; i < textForms!; i++) {
       _focusNodes[i].addListener(() {
-        setState(() {
-          _lastFocusedFieldIndex = i;
-        });
+        _textControllers[i].selection = TextSelection.fromPosition(
+          TextPosition(offset: _textControllers[i].text.length),
+        );
       });
     }
     _focusNodes.first.requestFocus();
@@ -81,6 +74,94 @@ class _NewElementFormState extends State<NewElementForm> {
 
   String capitalize(String value) {
     return '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
+  }
+
+  void setFieldsInitialValues() {
+    _textControllers[0].text = widget.initialValue.content;
+    _textControllers[0].selection = TextSelection.fromPosition(
+      TextPosition(offset: _textControllers[0].text.length),
+    );
+    _textControllers[1].text = widget.initialValue.translation;
+    if (widget.languageElement == LanguageElement.verb) {
+      _textControllers[2].text = widget.initialValue.firstPersonSingular;
+      _textControllers[3].text = widget.initialValue.secondPersonSingular;
+      _textControllers[4].text = widget.initialValue.thirdPersonSingular;
+      _textControllers[5].text = widget.initialValue.firstPersonPlural;
+      _textControllers[6].text = widget.initialValue.secondPersonPlural;
+      _textControllers[7].text = widget.initialValue.thirdPersonPlural;
+    }
+  }
+
+  Tuple2<dynamic, String> makeNewElement() {
+    String message = '';
+    var element;
+    if (widget.languageElement == LanguageElement.word) {
+      message = 'zostało dodane';
+      element = WordsCompanion(
+          language: drift.Value(widget.language.name),
+          content: drift.Value(_textControllers[0].text),
+          translation: drift.Value(_textControllers[1].text));
+    } else if (widget.languageElement == LanguageElement.phrase) {
+      message = 'została dodana';
+      element = PhrasesCompanion(
+          language: drift.Value(widget.language.name),
+          content: drift.Value(_textControllers[0].text),
+          translation: drift.Value(_textControllers[1].text));
+    } else {
+      message = 'został dodany';
+      element = VerbsCompanion(
+        language: drift.Value(widget.language.name),
+        content: drift.Value(_textControllers[0].text),
+        translation: drift.Value(_textControllers[1].text),
+        firstPersonSingular: drift.Value(_textControllers[2].text),
+        secondPersonSingular: drift.Value(_textControllers[3].text),
+        thirdPersonSingular: drift.Value(_textControllers[4].text),
+        firstPersonPlural: drift.Value(_textControllers[5].text),
+        secondPersonPlural: drift.Value(_textControllers[6].text),
+        thirdPersonPlural: drift.Value(_textControllers[7].text),
+      );
+    }
+
+    return Tuple2(element, message);
+  }
+
+  Tuple2<dynamic, String> makeEditedElement() {
+    String message = '';
+    var element;
+    if (widget.languageElement == LanguageElement.word) {
+      message = 'zostało zmienione';
+      element = Word(
+          id: widget.initialValue.id,
+          language: widget.language.name,
+          content: _textControllers[0].text,
+          translation: _textControllers[1].text,
+          category: widget.initialValue.category);
+    } else if (widget.languageElement == LanguageElement.phrase) {
+      message = 'została zmieniona';
+      element = Phrase(
+          id: widget.initialValue.id,
+          language: widget.language.name,
+          content: _textControllers[0].text,
+          translation: _textControllers[1].text,
+          category: widget.initialValue.category);
+    } else {
+      message = 'został zmieniony';
+      element = Verb(
+        id: widget.initialValue.id,
+        language: widget.language.name,
+        content: _textControllers[0].text,
+        translation: _textControllers[1].text,
+        firstPersonSingular: _textControllers[2].text,
+        secondPersonSingular: _textControllers[3].text,
+        thirdPersonSingular: _textControllers[4].text,
+        firstPersonPlural: _textControllers[5].text,
+        secondPersonPlural: _textControllers[6].text,
+        thirdPersonPlural: _textControllers[7].text,
+        category: widget.initialValue.category,
+      );
+    }
+
+    return Tuple2(element, message);
   }
 
   void _onFieldSubmitted(String value) async {
@@ -134,38 +215,45 @@ class _NewElementFormState extends State<NewElementForm> {
               ),
             ));
       } else {
-        if (_formKey.currentState!.validate()) {
-          var element;
-          String message;
-          if (widget.languageElement == LanguageElement.word) {
-            message = 'zostało dodane';
-            element = WordsCompanion(
-                language: drift.Value(widget.language.name),
-                content: drift.Value(_textControllers[0].text),
-                translation: drift.Value(_textControllers[1].text));
-          } else if (widget.languageElement == LanguageElement.phrase) {
-            message = 'została dodana';
-            element = PhrasesCompanion(
-                language: drift.Value(widget.language.name),
-                content: drift.Value(_textControllers[0].text),
-                translation: drift.Value(_textControllers[1].text));
-          } else {
-            message = 'został dodany';
-            element = VerbsCompanion(
-              language: drift.Value(widget.language.name),
-              content: drift.Value(_textControllers[0].text),
-              translation: drift.Value(_textControllers[1].text),
-              firstPersonSingular: drift.Value(_textControllers[2].text),
-              secondPersonSingular: drift.Value(_textControllers[3].text),
-              thirdPersonSingular: drift.Value(_textControllers[4].text),
-              firstPersonPlural: drift.Value(_textControllers[5].text),
-              secondPersonPlural: drift.Value(_textControllers[6].text),
-              thirdPersonPlural: drift.Value(_textControllers[7].text),
-            );
-          }
+        if (_formKey.currentState!.validate()) {}
+        if (widget.initialValue != null) {
+          var result = makeEditedElement();
           await context
               .read<LanguageElementData>()
-              .addElement(element, widget.languageElement);
+              .updateElement(result.item1, widget.languageElement);
+          fToast?.showToast(
+              gravity: ToastGravity.TOP,
+              child: Container(
+                padding: const EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25.0),
+                    color: Colors.greenAccent),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.check,
+                      color: Colors.black,
+                    ),
+                    const SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ));
+          Navigator.pop(context);
+        } else {
+          var result = makeNewElement();
+          await context
+              .read<LanguageElementData>()
+              .addElement(result.item1, widget.languageElement);
           fToast?.showToast(
               gravity: ToastGravity.TOP,
               child: Container(
@@ -177,15 +265,15 @@ class _NewElementFormState extends State<NewElementForm> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check,
                       color: Colors.black,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10.0,
                     ),
                     Text(
-                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} $message',
+                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1!
@@ -195,11 +283,11 @@ class _NewElementFormState extends State<NewElementForm> {
                 ),
               ));
         }
-        for (var controller in _textControllers) {
-          controller.clear();
-        }
-        _focusNodes[0].requestFocus();
       }
+      for (var controller in _textControllers) {
+        controller.clear();
+      }
+      _focusNodes[0].requestFocus();
     }
   }
 
@@ -233,6 +321,11 @@ class _NewElementFormState extends State<NewElementForm> {
               Size(width, 60),
             ),
             child: TextFormField(
+              onTap: () {
+                _textControllers[i].selection = TextSelection.fromPosition(
+                  TextPosition(offset: _textControllers[i].text.length),
+                );
+              },
               textInputAction: textInputAction,
               controller: _textControllers[i],
               focusNode: _focusNodes[i],
@@ -263,6 +356,9 @@ class _NewElementFormState extends State<NewElementForm> {
   @override
   Widget build(BuildContext context) {
     _textFormFields = _buildFormFields();
+    if (widget.initialValue != null) {
+      setFieldsInitialValues();
+    }
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
       child: Form(
@@ -283,7 +379,7 @@ class _NewElementFormState extends State<NewElementForm> {
                     ),
                     Expanded(
                       child: Text(
-                        title!,
+                        '${kLanguageElementTranslations[widget.languageElement]}',
                         style: Theme.of(context).textTheme.headline5,
                         textAlign: TextAlign.center,
                       ),

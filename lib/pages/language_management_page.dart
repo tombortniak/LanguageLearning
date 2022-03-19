@@ -5,6 +5,7 @@ import 'package:language_learning/models/edited_field.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'package:language_learning/constants.dart';
+import 'package:language_learning/components/element_form.dart';
 
 class LanguageManagementPage extends StatefulWidget {
   final LanguageElement languageElement;
@@ -132,15 +133,25 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                     controller: _searchTextController,
                   ),
                 ),
-                ElementCard(
-                  showOptions: false,
-                  content: Text(
-                      '${kLanguageElementTranslations[widget.languageElement]}',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headline5),
-                  translation: Text('tłumaczenie',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headline5),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                          '${kLanguageElementTranslations[widget.languageElement]}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline4),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Text('tłumaczenie',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline4),
+                    ),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                  ],
                 ),
                 Divider(),
                 Expanded(
@@ -204,22 +215,35 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                         },
                         key: UniqueKey(),
                         child: ElementCard(
-                            onEditTapped: () {
-                              setEditedIndex(index);
-                            },
-                            onDeleteTapped: () {
-                              languageElementData.removeElement(
-                                  languageElements[index],
-                                  widget.languageElement);
-                            },
-                            showOptions: true,
-                            content: Text(languageElements[index].content,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyText1),
-                            translation: Text(
-                                languageElements[index].translation,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyText1)),
+                          onEditTapped: () {
+                            showModalBottomSheet(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25.0)),
+                              ),
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) {
+                                return ElementForm(
+                                    initialValue: languageElements[index],
+                                    languageElement: widget.languageElement,
+                                    language: widget.language);
+                              },
+                            );
+                          },
+                          onDeleteTapped: () {
+                            languageElementData.removeElement(
+                                languageElements[index],
+                                widget.languageElement);
+                          },
+                          index: index,
+                          content: Text(languageElements[index].content,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyText1),
+                          translation: Text(languageElements[index].translation,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyText1),
+                        ),
                       );
                     },
                   ),

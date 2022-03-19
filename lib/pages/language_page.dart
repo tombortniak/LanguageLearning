@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:language_learning/components/new_element_form.dart';
+import 'package:language_learning/components/element_form.dart';
 import 'package:language_learning/constants.dart';
 import 'package:language_learning/pages/language_management_page.dart';
 
@@ -76,7 +76,7 @@ class _LanguagePageState extends State<LanguagePage>
                           languageElement = LanguageElement.phrase;
                         }
                       }
-                      return NewElementForm(
+                      return ElementForm(
                           languageElement: languageElement,
                           language: widget.language);
                     },

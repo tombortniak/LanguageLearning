@@ -77,6 +77,9 @@ class LanguageLearningTheme {
         unselectedLabelStyle: darkTextTheme.headline5,
         labelStyle: darkTextTheme.headline5,
       ),
+      popupMenuTheme: PopupMenuThemeData(
+        textStyle: darkTextTheme.bodyText1,
+      ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Colors.deepPurple, focusColor: Colors.grey),
     );
