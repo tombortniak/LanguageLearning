@@ -53,7 +53,7 @@ class LanguageLearningTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: Colors.black,
+          primary: Colors.deepPurple,
           textStyle: darkTextTheme.headline5,
           padding: const EdgeInsets.all(15.0),
           shape: const RoundedRectangleBorder(
@@ -62,10 +62,6 @@ class LanguageLearningTheme {
             ),
           ),
         ),
-      ),
-      dataTableTheme: DataTableThemeData(
-        dataTextStyle: darkTextTheme.bodyText1,
-        headingTextStyle: darkTextTheme.headline5,
       ),
       snackBarTheme: SnackBarThemeData(
         contentTextStyle: darkTextTheme.bodyText1,

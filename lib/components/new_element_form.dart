@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class NewElementForm extends StatefulWidget {
   final Language language;
@@ -32,10 +33,14 @@ class _NewElementFormState extends State<NewElementForm> {
   int _lastFocusedFieldIndex = 0;
   int? textForms;
   String? title;
+  FToast? fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast?.init(context);
+
     if (widget.languageElement == LanguageElement.verb) {
       textForms = 8;
       title = 'Nowy czasownik';
@@ -74,46 +79,78 @@ class _NewElementFormState extends State<NewElementForm> {
     }
   }
 
+  String capitalize(String value) {
+    return '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
+  }
+
   void _onFieldSubmitted(String value) async {
     if (_textControllers.any((element) => element.text.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Wszystkie pola muszą być wypełnione',
-            textAlign: TextAlign.center,
-          ),
-          backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      fToast?.showToast(
+          gravity: ToastGravity.TOP,
+          child: Container(
+            padding: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: Colors.redAccent,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Text(
+                  'Wszystkie pola muszą być wypełnione',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+              ],
+            ),
+          ));
     } else {
       if (context
           .read<LanguageElementData>()
           .contains(_textControllers[0].text, widget.languageElement)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${_textControllers[0].text} już istnieje',
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.redAccent,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        fToast?.showToast(
+            gravity: ToastGravity.TOP,
+            child: Container(
+              padding: const EdgeInsets.all(15.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25.0),
+                color: Colors.redAccent,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Text(
+                    '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+            ));
       } else {
         if (_formKey.currentState!.validate()) {
           var element;
+          String message;
           if (widget.languageElement == LanguageElement.word) {
+            message = 'zostało dodane';
             element = WordsCompanion(
                 language: drift.Value(widget.language.name),
                 content: drift.Value(_textControllers[0].text),
                 translation: drift.Value(_textControllers[1].text));
           } else if (widget.languageElement == LanguageElement.phrase) {
+            message = 'została dodana';
             element = PhrasesCompanion(
                 language: drift.Value(widget.language.name),
                 content: drift.Value(_textControllers[0].text),
                 translation: drift.Value(_textControllers[1].text));
           } else {
+            message = 'został dodany';
             element = VerbsCompanion(
               language: drift.Value(widget.language.name),
               content: drift.Value(_textControllers[0].text),
@@ -129,17 +166,34 @@ class _NewElementFormState extends State<NewElementForm> {
           await context
               .read<LanguageElementData>()
               .addElement(element, widget.languageElement);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              content: Text(
-                '${_textControllers[0].text} zostało dodane',
-                textAlign: TextAlign.center,
-              ),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
+          fToast?.showToast(
+              gravity: ToastGravity.TOP,
+              child: Container(
+                padding: const EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: Colors.greenAccent,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} $message',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ));
         }
         for (var controller in _textControllers) {
           controller.clear();
@@ -154,7 +208,7 @@ class _NewElementFormState extends State<NewElementForm> {
     int personConjugation = 1;
     String hintText;
     TextInputAction textInputAction = TextInputAction.next;
-    double width = MediaQuery.of(context).size.width * 0.8;
+    double width = MediaQuery.of(context).size.width * 0.7;
     for (int i = 0; i < textForms!; i++) {
       if (i == 0) {
         hintText = '${kLanguageElementTranslations[widget.languageElement]}';

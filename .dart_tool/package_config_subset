@@ -134,6 +134,10 @@ flutter_lints
 2.12
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_lints-1.0.4/
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_lints-1.0.4/lib/
+fluttertoast
+2.12
+file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-8.0.9/
+file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-8.0.9/lib/
 font_awesome_flutter
 2.12
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/font_awesome_flutter-9.2.0/
@@ -171,9 +175,9 @@ io
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/io-1.0.3/
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/io-1.0.3/lib/
 js
-2.16
-file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.4/
-file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.4/lib/
+2.12
+file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.3/
+file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.3/lib/
 json_annotation
 2.14
 file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/json_annotation-4.4.0/
@@ -378,4 +382,8 @@ flutter_test
 2.12
 file:///opt/flutter/packages/flutter_test/
 file:///opt/flutter/packages/flutter_test/lib/
+flutter_web_plugins
+2.12
+file:///opt/flutter/packages/flutter_web_plugins/
+file:///opt/flutter/packages/flutter_web_plugins/lib/
 2

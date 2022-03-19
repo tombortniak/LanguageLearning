@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:language_learning/components/element_card.dart';
 import 'package:language_learning/models/edited_field.dart';
 import 'package:language_learning/models/language_element_data.dart';
@@ -30,6 +31,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
   final _searchTextController = TextEditingController();
   List<bool> editedFields = [];
   Color color = Colors.red;
+  FToast? fToast;
+
+  String capitalize(String value) {
+    return '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
+  }
 
   int getEditedIndex() {
     if (widget.languageElement == LanguageElement.word) {
@@ -64,6 +70,8 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast?.init(context);
     editedFields = List.generate(
         context
             .read<LanguageElementData>()
@@ -75,7 +83,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width * 0.9;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -95,7 +103,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
               children: [
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 10.0),
-                  width: width * 0.7,
+                  width: width,
                   child: TextField(
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
@@ -156,16 +164,43 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                             languageElements[index],
                             widget.languageElement,
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.blueAccent,
-                              content: Text(
-                                'Usunięto ${languageElements[index].content}',
-                                textAlign: TextAlign.center,
-                              ),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
+                          String message = '';
+                          if (widget.languageElement == LanguageElement.word) {
+                            message = 'zostało usunięte';
+                          } else if (widget.languageElement ==
+                              LanguageElement.verb) {
+                            message = 'został usunięty';
+                          } else {
+                            message = 'została usunięta';
+                          }
+                          fToast?.showToast(
+                              gravity: ToastGravity.TOP,
+                              child: Container(
+                                padding: const EdgeInsets.all(15.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  color: Colors.greenAccent,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      color: Colors.black,
+                                    ),
+                                    SizedBox(
+                                      width: 10.0,
+                                    ),
+                                    Text(
+                                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} $message',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ));
                         },
                         key: UniqueKey(),
                         child: ElementCard(

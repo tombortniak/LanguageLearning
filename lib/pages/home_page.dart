@@ -9,7 +9,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -27,8 +26,8 @@ class HomePage extends StatelessWidget {
             children: [
               ElevatedButton(
                 child: Container(
-                  width: 125.0,
-                  height: 125.0,
+                  width: 120.0,
+                  height: 120.0,
                   margin: EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -52,8 +51,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 125.0,
-                  height: 125.0,
+                  width: 120.0,
+                  height: 120.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -83,8 +82,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 125.0,
-                  height: 125.0,
+                  width: 120.0,
+                  height: 120.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -108,8 +107,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 125.0,
-                  height: 125.0,
+                  width: 120.0,
+                  height: 120.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
