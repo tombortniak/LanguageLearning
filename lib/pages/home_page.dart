@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:language_learning/pages/learning_options_page.dart';
 import 'language_selection_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -47,7 +48,13 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LearningOptionsPage(),
+                      ));
+                },
               ),
               ElevatedButton(
                 child: Container(

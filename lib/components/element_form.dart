@@ -189,33 +189,7 @@ class _ElementFormState extends State<ElementForm> {
             ),
           ));
     } else {
-      if (context
-          .read<LanguageElementData>()
-          .contains(_textControllers[0].text, widget.languageElement)) {
-        fToast?.showToast(
-            gravity: ToastGravity.TOP,
-            child: Container(
-              padding: const EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25.0),
-                color: Colors.redAccent,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.error),
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  Text(
-                    '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
-            ));
-      } else {
-        if (_formKey.currentState!.validate()) {}
+      if (_formKey.currentState!.validate()) {
         if (widget.initialValue != null) {
           var result = makeEditedElement();
           await context
@@ -250,6 +224,32 @@ class _ElementFormState extends State<ElementForm> {
               ));
           Navigator.pop(context);
         } else {
+          if (context
+              .read<LanguageElementData>()
+              .contains(_textControllers[0].text, widget.languageElement)) {
+            fToast?.showToast(
+                gravity: ToastGravity.TOP,
+                child: Container(
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25.0),
+                    color: Colors.redAccent,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.error),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      Text(
+                        '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ],
+                  ),
+                ));
+          }
           var result = makeNewElement();
           await context
               .read<LanguageElementData>()

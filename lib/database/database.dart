@@ -12,7 +12,7 @@ class Phrases extends Table {
   TextColumn get language => text()();
   TextColumn get content => text()();
   TextColumn get translation => text()();
-  TextColumn get category => text().withDefault(const Constant('inne'))();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
 }
 
 class Verbs extends Table {
@@ -26,7 +26,7 @@ class Verbs extends Table {
   TextColumn get firstPersonPlural => text()();
   TextColumn get secondPersonPlural => text()();
   TextColumn get thirdPersonPlural => text()();
-  TextColumn get category => text().withDefault(const Constant('inne'))();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
 }
 
 class Words extends Table {
@@ -34,7 +34,13 @@ class Words extends Table {
   TextColumn get language => text()();
   TextColumn get content => text()();
   TextColumn get translation => text()();
-  TextColumn get category => text().withDefault(const Constant('inne'))();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
+}
+
+@DataClassName("Category")
+class Categories extends Table {
+  IntColumn get id => integer().autoIncrement().references(Categories, #id)();
+  TextColumn get name => text()();
 }
 
 LazyDatabase _openConnection() {
@@ -45,12 +51,26 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [Words, Verbs, Phrases])
+@DriftDatabase(tables: [Words, Verbs, Phrases, Categories])
 class LanguageDatabase extends _$LanguageDatabase {
   LanguageDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(onCreate: (m) async {
+      await m.createAll();
+      await into(categories).insert(CategoriesCompanion.insert(
+        name: 'inne',
+      ));
+    });
+  }
+
+  Future getAllCategories() {
+    return (select(categories)).get();
+  }
 
   Future getElements(Language language, LanguageElement languageElement) {
     if (languageElement == LanguageElement.word) {
@@ -87,6 +107,11 @@ class LanguageDatabase extends _$LanguageDatabase {
 
   Future<List<Phrase>> getAllPhrases() {
     return (select(phrases)).get();
+  }
+
+  Future addCategory(CategoriesCompanion category) {
+    final row = into(categories).insertReturning(category);
+    return row;
   }
 
   Future<Word> addWord(WordsCompanion word) {

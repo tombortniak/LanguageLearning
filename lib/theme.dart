@@ -80,6 +80,14 @@ class LanguageLearningTheme {
       popupMenuTheme: PopupMenuThemeData(
         textStyle: darkTextTheme.bodyText1,
       ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor:
+            MaterialStateProperty.resolveWith((states) => Colors.deepPurple),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor:
+            MaterialStateProperty.resolveWith((states) => Colors.deepPurple),
+      ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Colors.deepPurple, focusColor: Colors.grey),
     );

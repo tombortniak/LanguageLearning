@@ -185,33 +185,34 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                             message = 'została usunięta';
                           }
                           fToast?.showToast(
-                              gravity: ToastGravity.TOP,
-                              child: Container(
-                                padding: const EdgeInsets.all(15.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  color: Colors.greenAccent,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.check,
-                                      color: Colors.black,
-                                    ),
-                                    SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text(
-                                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} $message',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ));
+                            gravity: ToastGravity.TOP,
+                            child: Container(
+                              padding: const EdgeInsets.all(15.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25.0),
+                                color: Colors.greenAccent,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    color: Colors.black,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text(
+                                    '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} $message',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         },
                         key: UniqueKey(),
                         child: ElementCard(

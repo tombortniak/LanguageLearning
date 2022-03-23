@@ -9,15 +9,25 @@ class LanguageElementData extends ChangeNotifier {
       Tuple3<List<Word>, List<Verb>, List<Phrase>>([], [], []);
   Tuple3<List<Word>, List<Verb>, List<Phrase>> viewLanguageElements =
       Tuple3<List<Word>, List<Verb>, List<Phrase>>([], [], []);
+  List<Category> categories = [];
 
   BuildContext context;
 
   LanguageElementData({required this.context});
 
-  void initalize(Tuple3<List<Word>, List<Verb>, List<Phrase>> elements) {
+  void initalize(
+      Tuple4<List<Word>, List<Verb>, List<Phrase>, List<Category>> elements) {
     languageElements = Tuple3(elements.item1, elements.item2, elements.item3);
     viewLanguageElements = Tuple3(List.from(languageElements.item1),
         List.from(languageElements.item2), List.from(languageElements.item3));
+    categories = elements.item4;
+  }
+
+  Future addCategory(CategoriesCompanion category) async {
+    var row = await Provider.of<LanguageDatabase>(context, listen: false)
+        .addCategory(category);
+    categories.add(row);
+    notifyListeners();
   }
 
   Future addElement(dynamic element, LanguageElement languageElement) async {
@@ -87,6 +97,10 @@ class LanguageElementData extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<Category> getCategories() {
+    return categories;
+  }
+
   List<dynamic> getElements(LanguageElement languageElement) {
     if (languageElement == LanguageElement.word) {
       return languageElements.item1;
@@ -106,6 +120,10 @@ class LanguageElementData extends ChangeNotifier {
       filterPhrases(query);
     }
     notifyListeners();
+  }
+
+  List<Category> filterCategories(String query) {
+    return categories.where((element) => element.name.contains(query)).toList();
   }
 
   void filterWords(String query) {
@@ -137,44 +155,5 @@ class LanguageElementData extends ChangeNotifier {
     } else {
       return languageElements.item3.any((e) => e.content == query);
     }
-  }
-
-  Word toWord(WordsCompanion entry) {
-    var word = Word(
-        id: entry.id.value,
-        language: entry.language.value,
-        content: entry.content.value,
-        translation: entry.translation.value,
-        category: entry.category.value);
-
-    return word;
-  }
-
-  Verb toVerb(VerbsCompanion entry) {
-    var verb = Verb(
-        id: entry.id.value,
-        language: entry.language.value,
-        content: entry.content.value,
-        translation: entry.translation.value,
-        firstPersonSingular: entry.firstPersonSingular.value,
-        secondPersonSingular: entry.secondPersonSingular.value,
-        thirdPersonSingular: entry.thirdPersonSingular.value,
-        firstPersonPlural: entry.firstPersonPlural.value,
-        secondPersonPlural: entry.secondPersonPlural.value,
-        thirdPersonPlural: entry.thirdPersonPlural.value,
-        category: entry.category.value);
-
-    return verb;
-  }
-
-  Phrase toPhrase(PhrasesCompanion entry) {
-    var phrase = Phrase(
-        id: entry.id.value,
-        language: entry.language.value,
-        content: entry.content.value,
-        translation: entry.translation.value,
-        category: entry.category.value);
-
-    return phrase;
   }
 }

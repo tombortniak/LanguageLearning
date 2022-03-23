@@ -7,18 +7,190 @@ part of 'database.dart';
 // **************************************************************************
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+class Category extends DataClass implements Insertable<Category> {
+  final int id;
+  final String name;
+  Category({required this.id, required this.name});
+  factory Category.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Category(
+      id: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  CategoriesCompanion toCompanion(bool nullToAbsent) {
+    return CategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+    );
+  }
+
+  factory Category.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Category(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  Category copyWith({int? id, String? name}) => Category(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Category(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Category && other.id == this.id && other.name == this.name);
+}
+
+class CategoriesCompanion extends UpdateCompanion<Category> {
+  final Value<int> id;
+  final Value<String> name;
+  const CategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  CategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+  }) : name = Value(name);
+  static Insertable<Category> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  CategoriesCompanion copyWith({Value<int>? id, Value<String>? name}) {
+    return CategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CategoriesTable extends Categories
+    with TableInfo<$CategoriesTable, Category> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoriesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+      'id', aliasedName, false,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints:
+          'REFERENCES categories (id) PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+      'name', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? 'categories';
+  @override
+  String get actualTableName => 'categories';
+  @override
+  VerificationContext validateIntegrity(Insertable<Category> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Category.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $CategoriesTable createAlias(String alias) {
+    return $CategoriesTable(attachedDatabase, alias);
+  }
+}
+
 class Word extends DataClass implements Insertable<Word> {
   final int id;
   final String language;
   final String content;
   final String translation;
-  final String category;
+  final int? category;
   Word(
       {required this.id,
       required this.language,
       required this.content,
       required this.translation,
-      required this.category});
+      this.category});
   factory Word.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Word(
@@ -30,8 +202,8 @@ class Word extends DataClass implements Insertable<Word> {
           .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
       translation: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}translation'])!,
-      category: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}category'])!,
+      category: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}category']),
     );
   }
   @override
@@ -41,7 +213,9 @@ class Word extends DataClass implements Insertable<Word> {
     map['language'] = Variable<String>(language);
     map['content'] = Variable<String>(content);
     map['translation'] = Variable<String>(translation);
-    map['category'] = Variable<String>(category);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<int?>(category);
+    }
     return map;
   }
 
@@ -51,7 +225,9 @@ class Word extends DataClass implements Insertable<Word> {
       language: Value(language),
       content: Value(content),
       translation: Value(translation),
-      category: Value(category),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
     );
   }
 
@@ -63,7 +239,7 @@ class Word extends DataClass implements Insertable<Word> {
       language: serializer.fromJson<String>(json['language']),
       content: serializer.fromJson<String>(json['content']),
       translation: serializer.fromJson<String>(json['translation']),
-      category: serializer.fromJson<String>(json['category']),
+      category: serializer.fromJson<int?>(json['category']),
     );
   }
   @override
@@ -74,7 +250,7 @@ class Word extends DataClass implements Insertable<Word> {
       'language': serializer.toJson<String>(language),
       'content': serializer.toJson<String>(content),
       'translation': serializer.toJson<String>(translation),
-      'category': serializer.toJson<String>(category),
+      'category': serializer.toJson<int?>(category),
     };
   }
 
@@ -83,7 +259,7 @@ class Word extends DataClass implements Insertable<Word> {
           String? language,
           String? content,
           String? translation,
-          String? category}) =>
+          int? category}) =>
       Word(
         id: id ?? this.id,
         language: language ?? this.language,
@@ -121,7 +297,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
   final Value<String> language;
   final Value<String> content;
   final Value<String> translation;
-  final Value<String> category;
+  final Value<int?> category;
   const WordsCompanion({
     this.id = const Value.absent(),
     this.language = const Value.absent(),
@@ -143,7 +319,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     Expression<String>? language,
     Expression<String>? content,
     Expression<String>? translation,
-    Expression<String>? category,
+    Expression<int?>? category,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -159,7 +335,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
       Value<String>? language,
       Value<String>? content,
       Value<String>? translation,
-      Value<String>? category}) {
+      Value<int?>? category}) {
     return WordsCompanion(
       id: id ?? this.id,
       language: language ?? this.language,
@@ -185,7 +361,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
       map['translation'] = Variable<String>(translation.value);
     }
     if (category.present) {
-      map['category'] = Variable<String>(category.value);
+      map['category'] = Variable<int?>(category.value);
     }
     return map;
   }
@@ -233,11 +409,11 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
       type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _categoryMeta = const VerificationMeta('category');
   @override
-  late final GeneratedColumn<String?> category = GeneratedColumn<String?>(
-      'category', aliasedName, false,
-      type: const StringType(),
+  late final GeneratedColumn<int?> category = GeneratedColumn<int?>(
+      'category', aliasedName, true,
+      type: const IntType(),
       requiredDuringInsert: false,
-      defaultValue: const Constant('inne'));
+      defaultConstraints: 'REFERENCES categories (id)');
   @override
   List<GeneratedColumn> get $columns =>
       [id, language, content, translation, category];
@@ -305,7 +481,7 @@ class Verb extends DataClass implements Insertable<Verb> {
   final String firstPersonPlural;
   final String secondPersonPlural;
   final String thirdPersonPlural;
-  final String category;
+  final int? category;
   Verb(
       {required this.id,
       required this.language,
@@ -317,7 +493,7 @@ class Verb extends DataClass implements Insertable<Verb> {
       required this.firstPersonPlural,
       required this.secondPersonPlural,
       required this.thirdPersonPlural,
-      required this.category});
+      this.category});
   factory Verb.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Verb(
@@ -341,8 +517,8 @@ class Verb extends DataClass implements Insertable<Verb> {
           data['${effectivePrefix}second_person_plural'])!,
       thirdPersonPlural: const StringType().mapFromDatabaseResponse(
           data['${effectivePrefix}third_person_plural'])!,
-      category: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}category'])!,
+      category: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}category']),
     );
   }
   @override
@@ -358,7 +534,9 @@ class Verb extends DataClass implements Insertable<Verb> {
     map['first_person_plural'] = Variable<String>(firstPersonPlural);
     map['second_person_plural'] = Variable<String>(secondPersonPlural);
     map['third_person_plural'] = Variable<String>(thirdPersonPlural);
-    map['category'] = Variable<String>(category);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<int?>(category);
+    }
     return map;
   }
 
@@ -374,7 +552,9 @@ class Verb extends DataClass implements Insertable<Verb> {
       firstPersonPlural: Value(firstPersonPlural),
       secondPersonPlural: Value(secondPersonPlural),
       thirdPersonPlural: Value(thirdPersonPlural),
-      category: Value(category),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
     );
   }
 
@@ -396,7 +576,7 @@ class Verb extends DataClass implements Insertable<Verb> {
       secondPersonPlural:
           serializer.fromJson<String>(json['secondPersonPlural']),
       thirdPersonPlural: serializer.fromJson<String>(json['thirdPersonPlural']),
-      category: serializer.fromJson<String>(json['category']),
+      category: serializer.fromJson<int?>(json['category']),
     );
   }
   @override
@@ -413,7 +593,7 @@ class Verb extends DataClass implements Insertable<Verb> {
       'firstPersonPlural': serializer.toJson<String>(firstPersonPlural),
       'secondPersonPlural': serializer.toJson<String>(secondPersonPlural),
       'thirdPersonPlural': serializer.toJson<String>(thirdPersonPlural),
-      'category': serializer.toJson<String>(category),
+      'category': serializer.toJson<int?>(category),
     };
   }
 
@@ -428,7 +608,7 @@ class Verb extends DataClass implements Insertable<Verb> {
           String? firstPersonPlural,
           String? secondPersonPlural,
           String? thirdPersonPlural,
-          String? category}) =>
+          int? category}) =>
       Verb(
         id: id ?? this.id,
         language: language ?? this.language,
@@ -501,7 +681,7 @@ class VerbsCompanion extends UpdateCompanion<Verb> {
   final Value<String> firstPersonPlural;
   final Value<String> secondPersonPlural;
   final Value<String> thirdPersonPlural;
-  final Value<String> category;
+  final Value<int?> category;
   const VerbsCompanion({
     this.id = const Value.absent(),
     this.language = const Value.absent(),
@@ -547,7 +727,7 @@ class VerbsCompanion extends UpdateCompanion<Verb> {
     Expression<String>? firstPersonPlural,
     Expression<String>? secondPersonPlural,
     Expression<String>? thirdPersonPlural,
-    Expression<String>? category,
+    Expression<int?>? category,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -579,7 +759,7 @@ class VerbsCompanion extends UpdateCompanion<Verb> {
       Value<String>? firstPersonPlural,
       Value<String>? secondPersonPlural,
       Value<String>? thirdPersonPlural,
-      Value<String>? category}) {
+      Value<int?>? category}) {
     return VerbsCompanion(
       id: id ?? this.id,
       language: language ?? this.language,
@@ -632,7 +812,7 @@ class VerbsCompanion extends UpdateCompanion<Verb> {
       map['third_person_plural'] = Variable<String>(thirdPersonPlural.value);
     }
     if (category.present) {
-      map['category'] = Variable<String>(category.value);
+      map['category'] = Variable<int?>(category.value);
     }
     return map;
   }
@@ -722,11 +902,11 @@ class $VerbsTable extends Verbs with TableInfo<$VerbsTable, Verb> {
           type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _categoryMeta = const VerificationMeta('category');
   @override
-  late final GeneratedColumn<String?> category = GeneratedColumn<String?>(
-      'category', aliasedName, false,
-      type: const StringType(),
+  late final GeneratedColumn<int?> category = GeneratedColumn<int?>(
+      'category', aliasedName, true,
+      type: const IntType(),
       requiredDuringInsert: false,
-      defaultValue: const Constant('inne'));
+      defaultConstraints: 'REFERENCES categories (id)');
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -847,13 +1027,13 @@ class Phrase extends DataClass implements Insertable<Phrase> {
   final String language;
   final String content;
   final String translation;
-  final String category;
+  final int? category;
   Phrase(
       {required this.id,
       required this.language,
       required this.content,
       required this.translation,
-      required this.category});
+      this.category});
   factory Phrase.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Phrase(
@@ -865,8 +1045,8 @@ class Phrase extends DataClass implements Insertable<Phrase> {
           .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
       translation: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}translation'])!,
-      category: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}category'])!,
+      category: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}category']),
     );
   }
   @override
@@ -876,7 +1056,9 @@ class Phrase extends DataClass implements Insertable<Phrase> {
     map['language'] = Variable<String>(language);
     map['content'] = Variable<String>(content);
     map['translation'] = Variable<String>(translation);
-    map['category'] = Variable<String>(category);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<int?>(category);
+    }
     return map;
   }
 
@@ -886,7 +1068,9 @@ class Phrase extends DataClass implements Insertable<Phrase> {
       language: Value(language),
       content: Value(content),
       translation: Value(translation),
-      category: Value(category),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
     );
   }
 
@@ -898,7 +1082,7 @@ class Phrase extends DataClass implements Insertable<Phrase> {
       language: serializer.fromJson<String>(json['language']),
       content: serializer.fromJson<String>(json['content']),
       translation: serializer.fromJson<String>(json['translation']),
-      category: serializer.fromJson<String>(json['category']),
+      category: serializer.fromJson<int?>(json['category']),
     );
   }
   @override
@@ -909,7 +1093,7 @@ class Phrase extends DataClass implements Insertable<Phrase> {
       'language': serializer.toJson<String>(language),
       'content': serializer.toJson<String>(content),
       'translation': serializer.toJson<String>(translation),
-      'category': serializer.toJson<String>(category),
+      'category': serializer.toJson<int?>(category),
     };
   }
 
@@ -918,7 +1102,7 @@ class Phrase extends DataClass implements Insertable<Phrase> {
           String? language,
           String? content,
           String? translation,
-          String? category}) =>
+          int? category}) =>
       Phrase(
         id: id ?? this.id,
         language: language ?? this.language,
@@ -956,7 +1140,7 @@ class PhrasesCompanion extends UpdateCompanion<Phrase> {
   final Value<String> language;
   final Value<String> content;
   final Value<String> translation;
-  final Value<String> category;
+  final Value<int?> category;
   const PhrasesCompanion({
     this.id = const Value.absent(),
     this.language = const Value.absent(),
@@ -978,7 +1162,7 @@ class PhrasesCompanion extends UpdateCompanion<Phrase> {
     Expression<String>? language,
     Expression<String>? content,
     Expression<String>? translation,
-    Expression<String>? category,
+    Expression<int?>? category,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -994,7 +1178,7 @@ class PhrasesCompanion extends UpdateCompanion<Phrase> {
       Value<String>? language,
       Value<String>? content,
       Value<String>? translation,
-      Value<String>? category}) {
+      Value<int?>? category}) {
     return PhrasesCompanion(
       id: id ?? this.id,
       language: language ?? this.language,
@@ -1020,7 +1204,7 @@ class PhrasesCompanion extends UpdateCompanion<Phrase> {
       map['translation'] = Variable<String>(translation.value);
     }
     if (category.present) {
-      map['category'] = Variable<String>(category.value);
+      map['category'] = Variable<int?>(category.value);
     }
     return map;
   }
@@ -1068,11 +1252,11 @@ class $PhrasesTable extends Phrases with TableInfo<$PhrasesTable, Phrase> {
       type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _categoryMeta = const VerificationMeta('category');
   @override
-  late final GeneratedColumn<String?> category = GeneratedColumn<String?>(
-      'category', aliasedName, false,
-      type: const StringType(),
+  late final GeneratedColumn<int?> category = GeneratedColumn<int?>(
+      'category', aliasedName, true,
+      type: const IntType(),
       requiredDuringInsert: false,
-      defaultValue: const Constant('inne'));
+      defaultConstraints: 'REFERENCES categories (id)');
   @override
   List<GeneratedColumn> get $columns =>
       [id, language, content, translation, category];
@@ -1131,11 +1315,13 @@ class $PhrasesTable extends Phrases with TableInfo<$PhrasesTable, Phrase> {
 
 abstract class _$LanguageDatabase extends GeneratedDatabase {
   _$LanguageDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  late final $CategoriesTable categories = $CategoriesTable(this);
   late final $WordsTable words = $WordsTable(this);
   late final $VerbsTable verbs = $VerbsTable(this);
   late final $PhrasesTable phrases = $PhrasesTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [words, verbs, phrases];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [categories, words, verbs, phrases];
 }

@@ -1,9 +1,11 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:language_learning/pages/home_page.dart';
 import 'package:language_learning/pages/splash_page.dart';
+import 'database/database.dart';
 
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
@@ -15,6 +17,7 @@ void main() {
     final license = await rootBundle.loadString('google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
+
   runApp(
     MultiProvider(
       providers: [
@@ -41,7 +44,7 @@ class LanguageLearningApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Language Learning',
-      home: const SplashPage(),
+      home: const HomePage(),
       darkTheme: LanguageLearningTheme.dark(),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,

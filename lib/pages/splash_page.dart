@@ -13,7 +13,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  Future<Tuple3<List<Word>, List<Verb>, List<Phrase>>>
+  Future<Tuple4<List<Word>, List<Verb>, List<Phrase>, List<Category>>>
       getLanguageElements() async {
     var words = await Provider.of<LanguageDatabase>(context, listen: false)
         .getAllWords();
@@ -21,8 +21,11 @@ class _SplashPageState extends State<SplashPage> {
         .getAllVerbs();
     var phrases = await Provider.of<LanguageDatabase>(context, listen: false)
         .getAllPhrases();
+    var categories = await Provider.of<LanguageDatabase>(context, listen: false)
+        .getAllCategories();
 
-    return Tuple3<List<Word>, List<Verb>, List<Phrase>>(words, verbs, phrases);
+    return Tuple4<List<Word>, List<Verb>, List<Phrase>, List<Category>>(
+        words, verbs, phrases, categories);
   }
 
   @override
