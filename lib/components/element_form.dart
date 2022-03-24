@@ -7,6 +7,7 @@ import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tuple/tuple.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class ElementForm extends StatefulWidget {
   final Language language;
@@ -35,10 +36,13 @@ class _ElementFormState extends State<ElementForm> {
   bool showSpecialCharacters = false;
   int? textForms;
   FToast? fToast;
+  TextEditingController newCategoryTextController = TextEditingController();
+  Category? selectedCategory;
 
   @override
   void initState() {
     super.initState();
+    selectedCategory = context.read<LanguageElementData>().categories.first;
     fToast = FToast();
     fToast?.init(context);
     if (widget.languageElement == LanguageElement.verb) {
@@ -92,21 +96,93 @@ class _ElementFormState extends State<ElementForm> {
     }
   }
 
+  void onSubmittedNewCategory(String newCategory) {
+    if (newCategory.isEmpty) {
+      showToast(
+        'Nazwa nie może być pusta',
+        Colors.redAccent,
+        Icons.error,
+      );
+    } else {
+      if (context.read<LanguageElementData>().containsCategory(newCategory)) {
+        showToast(
+          'Kategoria już istnieje',
+          Colors.redAccent,
+          Icons.error,
+        );
+      } else {
+        context
+            .read<LanguageElementData>()
+            .addCategory(CategoriesCompanion(name: drift.Value(newCategory)));
+        showToast('Kategoria została dodana', Colors.greenAccent, Icons.check);
+        newCategoryTextController.clear();
+        setState(() {
+          selectedCategory = context
+              .read<LanguageElementData>()
+              .categories
+              .where((element) => element.name == newCategory)
+              .first;
+        });
+      }
+    }
+  }
+
+  void showToast(String message, Color color, IconData icon) {
+    Color textColor = Colors.black;
+    if (color == Colors.redAccent) {
+      textColor = Colors.white;
+    } else if (color == Colors.greenAccent) {
+      textColor = Colors.black;
+    }
+    fToast?.showToast(
+        gravity: ToastGravity.TOP,
+        child: Container(
+          padding: const EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: color,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: textColor,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                message,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: textColor),
+              ),
+            ],
+          ),
+        ));
+  }
+
   Tuple2<dynamic, String> makeNewElement() {
     String message = '';
     var element;
     if (widget.languageElement == LanguageElement.word) {
       message = 'zostało dodane';
       element = WordsCompanion(
-          language: drift.Value(widget.language.name),
-          content: drift.Value(_textControllers[0].text),
-          translation: drift.Value(_textControllers[1].text));
+        language: drift.Value(widget.language.name),
+        content: drift.Value(_textControllers[0].text),
+        translation: drift.Value(_textControllers[1].text),
+        category: drift.Value(selectedCategory!.id),
+      );
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została dodana';
       element = PhrasesCompanion(
-          language: drift.Value(widget.language.name),
-          content: drift.Value(_textControllers[0].text),
-          translation: drift.Value(_textControllers[1].text));
+        language: drift.Value(widget.language.name),
+        content: drift.Value(_textControllers[0].text),
+        translation: drift.Value(_textControllers[1].text),
+        category: drift.Value(selectedCategory!.id),
+      );
     } else {
       message = 'został dodany';
       element = VerbsCompanion(
@@ -119,6 +195,7 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: drift.Value(_textControllers[5].text),
         secondPersonPlural: drift.Value(_textControllers[6].text),
         thirdPersonPlural: drift.Value(_textControllers[7].text),
+        category: drift.Value(selectedCategory!.id),
       );
     }
 
@@ -135,7 +212,7 @@ class _ElementFormState extends State<ElementForm> {
           language: widget.language.name,
           content: _textControllers[0].text,
           translation: _textControllers[1].text,
-          category: widget.initialValue.category);
+          category: selectedCategory!.id);
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została zmieniona';
       element = Phrase(
@@ -143,7 +220,7 @@ class _ElementFormState extends State<ElementForm> {
           language: widget.language.name,
           content: _textControllers[0].text,
           translation: _textControllers[1].text,
-          category: widget.initialValue.category);
+          category: selectedCategory!.id);
     } else {
       message = 'został zmieniony';
       element = Verb(
@@ -157,7 +234,7 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: _textControllers[5].text,
         secondPersonPlural: _textControllers[6].text,
         thirdPersonPlural: _textControllers[7].text,
-        category: widget.initialValue.category,
+        category: selectedCategory!.id,
       );
     }
 
@@ -166,28 +243,11 @@ class _ElementFormState extends State<ElementForm> {
 
   void _onFieldSubmitted(String value) async {
     if (_textControllers.any((element) => element.text.isEmpty)) {
-      fToast?.showToast(
-          gravity: ToastGravity.TOP,
-          child: Container(
-            padding: const EdgeInsets.all(15.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-              color: Colors.redAccent,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  'Wszystkie pola muszą być wypełnione',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-              ],
-            ),
-          ));
+      showToast(
+        'Wszystkie pola muszą być wypełnione',
+        Colors.red,
+        Icons.error,
+      );
     } else {
       if (_formKey.currentState!.validate()) {
         if (widget.initialValue != null) {
@@ -195,93 +255,32 @@ class _ElementFormState extends State<ElementForm> {
           await context
               .read<LanguageElementData>()
               .updateElement(result.item1, widget.languageElement);
-          fToast?.showToast(
-              gravity: ToastGravity.TOP,
-              child: Container(
-                padding: const EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.greenAccent),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.check,
-                      color: Colors.black,
-                    ),
-                    const SizedBox(
-                      width: 10.0,
-                    ),
-                    Text(
-                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ));
+          showToast(
+            '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
+            Colors.greenAccent,
+            Icons.error,
+          );
           Navigator.pop(context);
         } else {
           if (context
               .read<LanguageElementData>()
               .contains(_textControllers[0].text, widget.languageElement)) {
-            fToast?.showToast(
-                gravity: ToastGravity.TOP,
-                child: Container(
-                  padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.redAccent,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error),
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      Text(
-                        '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
-                  ),
-                ));
+            showToast(
+              '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} już istnieje',
+              Colors.redAccent,
+              Icons.error,
+            );
+          } else {
+            var result = makeNewElement();
+            await context
+                .read<LanguageElementData>()
+                .addElement(result.item1, widget.languageElement);
+            showToast(
+              '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
+              Colors.greenAccent,
+              Icons.check,
+            );
           }
-          var result = makeNewElement();
-          await context
-              .read<LanguageElementData>()
-              .addElement(result.item1, widget.languageElement);
-          fToast?.showToast(
-              gravity: ToastGravity.TOP,
-              child: Container(
-                padding: const EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25.0),
-                  color: Colors.greenAccent,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.check,
-                      color: Colors.black,
-                    ),
-                    const SizedBox(
-                      width: 10.0,
-                    ),
-                    Text(
-                      '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ));
         }
       }
       for (var controller in _textControllers) {
@@ -445,7 +444,148 @@ class _ElementFormState extends State<ElementForm> {
                   ),
                 ),
               const SizedBox(
-                height: 10.0,
+                height: 20.0,
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'kategoria',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * .7,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Consumer<LanguageElementData>(
+                            builder: (context, languageElementData, child) {
+                          return DropdownSearch(
+                            onChanged: ((Category? value) {
+                              selectedCategory = value;
+                            }),
+                            onFind: (String? filter) async {
+                              var categories = await languageElementData
+                                  .categories
+                                  .where((element) =>
+                                      element.name.contains(filter!))
+                                  .toList();
+                              return categories;
+                            },
+                            mode: Mode.BOTTOM_SHEET,
+                            searchFieldProps: TextFieldProps(
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(5.0),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: Colors.deepPurple),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                hintText: 'Szukaj',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.copyWith(color: Colors.grey),
+                                prefixIcon: const Icon(Icons.search,
+                                    color: Colors.grey),
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            showSearchBox: true,
+                            selectedItem: selectedCategory,
+                            items: languageElementData.categories,
+                            itemAsString: (Category? category) {
+                              return category!.name;
+                            },
+                          );
+                        }),
+                      ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
+                      Tooltip(
+                        message: 'Dodaj nową kategorię',
+                        child: IconButton(
+                          iconSize: 35.0,
+                          onPressed: () {
+                            String newCategory = '';
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return SimpleDialog(
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          'Nowa kategoria',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(25.0),
+                                        child: TextField(
+                                          controller: newCategoryTextController,
+                                          autofocus: true,
+                                          decoration: InputDecoration(
+                                            focusedBorder:
+                                                const UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.deepPurple),
+                                            ),
+                                            hintText: 'nazwa',
+                                            hintStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2,
+                                          ),
+                                          onChanged: (value) {
+                                            newCategory = value;
+                                          },
+                                          onSubmitted: (value) {
+                                            if (Platform.isWindows ||
+                                                Platform.isLinux ||
+                                                Platform.isMacOS) {
+                                              onSubmittedNewCategory(
+                                                  newCategory);
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 15.0,
+                                      ),
+                                      FloatingActionButton(
+                                        onPressed: () {
+                                          onSubmittedNewCategory(newCategory);
+                                        },
+                                        child: const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
+                          icon: Icon(
+                            Icons.add_circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20.0,
               ),
               Padding(
                 padding: EdgeInsets.only(

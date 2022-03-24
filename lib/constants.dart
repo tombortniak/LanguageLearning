@@ -15,6 +15,6 @@ enum Language { spanish, english }
 
 enum LanguageElement { word, verb, phrase }
 
-enum PopupAction { edit, delete }
+enum PopupAction { edit, delete, details }
 
 enum LearningOption { all, custom }

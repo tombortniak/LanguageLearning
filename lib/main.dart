@@ -10,7 +10,6 @@ import 'database/database.dart';
 import 'package:provider/provider.dart';
 import 'package:language_learning/database/database.dart';
 import 'theme.dart';
-import 'models/edited_field.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {
@@ -24,9 +23,6 @@ void main() {
         Provider<LanguageDatabase>(
           create: (context) => LanguageDatabase(),
           dispose: (context, db) => db.close(),
-        ),
-        Provider<EditedField>(
-          create: (context) => EditedField(),
         ),
         ChangeNotifierProvider<LanguageElementData>(
           create: (context) => LanguageElementData(context: context),

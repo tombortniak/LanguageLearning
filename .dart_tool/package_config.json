@@ -164,6 +164,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "dropdown_search",
+      "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/dropdown_search-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "enum_to_string",
       "rootUri": "file:///opt/flutter/.pub-cache/hosted/pub.dartlang.org/enum_to_string-2.0.1",
       "packageUri": "lib/",
@@ -584,7 +590,7 @@
       "languageVersion": "2.16"
     }
   ],
-  "generated": "2022-03-19T17:24:50.540679Z",
+  "generated": "2022-03-23T21:33:43.207534Z",
   "generator": "pub",
   "generatorVersion": "2.16.0"
 }

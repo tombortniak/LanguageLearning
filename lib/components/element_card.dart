@@ -7,13 +7,15 @@ class ElementCard extends StatefulWidget {
   final int index;
   final Function()? onEditTapped;
   final Function()? onDeleteTapped;
+  final Function()? onDetailsTapped;
   ElementCard({
     Key? key,
     required this.content,
     required this.translation,
     required this.index,
-    this.onEditTapped,
-    this.onDeleteTapped,
+    required this.onEditTapped,
+    required this.onDeleteTapped,
+    required this.onDetailsTapped,
   }) : super(key: key);
 
   @override
@@ -53,6 +55,16 @@ class _ElementCardState extends State<ElementCard> {
                 value: PopupAction.delete,
                 onTap: widget.onDeleteTapped,
               ),
+              PopupMenuItem(
+                  child: Text(
+                    'szczegóły',
+                  ),
+                  value: PopupAction.details,
+                  onTap: () {
+                    WidgetsBinding.instance!.addPostFrameCallback((_) {
+                      widget.onDetailsTapped!();
+                    });
+                  })
             ],
           ),
         )

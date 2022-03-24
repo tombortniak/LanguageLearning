@@ -34,12 +34,12 @@ class Words extends Table {
   TextColumn get language => text()();
   TextColumn get content => text()();
   TextColumn get translation => text()();
-  IntColumn get category => integer().nullable().references(Categories, #id)();
+  IntColumn get category => integer().references(Categories, #id)();
 }
 
 @DataClassName("Category")
 class Categories extends Table {
-  IntColumn get id => integer().autoIncrement().references(Categories, #id)();
+  IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
 }
 
@@ -115,12 +115,7 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<Word> addWord(WordsCompanion word) {
-    final row = into(words).insertReturning(
-      WordsCompanion.insert(
-          language: word.language.value,
-          content: word.content.value,
-          translation: word.translation.value),
-    );
+    final row = into(words).insertReturning(word);
     return row;
   }
 
@@ -137,18 +132,7 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<Verb> addVerb(VerbsCompanion verb) {
-    final row = into(verbs).insertReturning(
-      VerbsCompanion.insert(
-          language: verb.language.value,
-          content: verb.content.value,
-          translation: verb.translation.value,
-          firstPersonSingular: verb.firstPersonSingular.value,
-          secondPersonSingular: verb.secondPersonSingular.value,
-          thirdPersonSingular: verb.thirdPersonSingular.value,
-          firstPersonPlural: verb.firstPersonPlural.value,
-          secondPersonPlural: verb.secondPersonPlural.value,
-          thirdPersonPlural: verb.thirdPersonPlural.value),
-    );
+    final row = into(verbs).insertReturning(verb);
     return row;
   }
 
@@ -165,12 +149,7 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<Phrase> addPhrase(PhrasesCompanion phrase) {
-    final row = into(phrases).insertReturning(
-      PhrasesCompanion.insert(
-          language: phrase.language.value,
-          content: phrase.content.value,
-          translation: phrase.translation.value),
-    );
+    final row = into(phrases).insertReturning(phrase);
 
     return row;
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:language_learning/components/element_card.dart';
-import 'package:language_learning/models/edited_field.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'package:language_learning/constants.dart';
@@ -38,34 +37,128 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
     return '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
   }
 
-  int getEditedIndex() {
-    if (widget.languageElement == LanguageElement.word) {
-      return Provider.of<EditedField>(context, listen: false).wordIndex;
-    } else if (widget.languageElement == LanguageElement.verb) {
-      return Provider.of<EditedField>(context, listen: false).verbIndex;
+  Widget buildDetailsView(dynamic element) {
+    String elementName = '';
+    if (widget.languageElement == LanguageElement.verb) {
+      elementName = 'czasownik';
+    } else if (widget.languageElement == LanguageElement.word) {
+      elementName = 'słowo';
     } else {
-      return Provider.of<EditedField>(context, listen: false).phraseIndex;
+      elementName = 'fraza';
     }
-  }
-
-  void setEditedIndex(int index) {
-    if (widget.languageElement == LanguageElement.word) {
-      Provider.of<EditedField>(context, listen: false).wordIndex = index;
-    } else if (widget.languageElement == LanguageElement.verb) {
-      Provider.of<EditedField>(context, listen: false).verbIndex = index;
-    } else {
-      Provider.of<EditedField>(context, listen: false).phraseIndex = index;
-    }
-  }
-
-  void resetEditedIndex() {
-    if (widget.languageElement == LanguageElement.word) {
-      Provider.of<EditedField>(context, listen: false).wordIndex = -1;
-    } else if (widget.languageElement == LanguageElement.verb) {
-      Provider.of<EditedField>(context, listen: false).verbIndex = -1;
-    } else {
-      Provider.of<EditedField>(context, listen: false).phraseIndex = -1;
-    }
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(elementName),
+            Text(
+              element.content,
+              style: Theme.of(context).textTheme.bodyText1,
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('tłumaczenie'),
+            Text(
+              element.translation,
+              style: Theme.of(context).textTheme.bodyText1,
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('kategoria'),
+            Text(
+              context
+                  .read<LanguageElementData>()
+                  .categories
+                  .where((e) => e.id == element.category)
+                  .toList()
+                  .first
+                  .name,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ],
+        ),
+        if (widget.languageElement == LanguageElement.verb)
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Text('Liczba pojedyncza'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('1. osoba'),
+                  Text(
+                    element.firstPersonSingular,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('2. osoba'),
+                  Text(
+                    element.secondPersonSingular,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('3. osoba'),
+                  Text(
+                    element.thirdPersonSingular,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text('Liczba mnoga'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('1. osoba'),
+                  Text(
+                    element.firstPersonPlural,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('2. osoba'),
+                  Text(
+                    element.secondPersonPlural,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('3. osoba'),
+                  Text(
+                    element.thirdPersonPlural,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              )
+            ],
+          ),
+      ],
+    );
   }
 
   @override
@@ -236,6 +329,28 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                             languageElementData.removeElement(
                                 languageElements[index],
                                 widget.languageElement);
+                          },
+                          onDetailsTapped: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return SimpleDialog(
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          'Szczegóły',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 15.0,
+                                      ),
+                                      buildDetailsView(languageElements[index])
+                                    ],
+                                  );
+                                });
                           },
                           index: index,
                           content: Text(languageElements[index].content,

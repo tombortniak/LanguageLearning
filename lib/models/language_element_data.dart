@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:language_learning/constants.dart';
 import 'package:language_learning/database/database.dart';
@@ -145,6 +146,10 @@ class LanguageElementData extends ChangeNotifier {
     viewLanguageElements.item3.addAll(languageElements.item3
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
+  }
+
+  bool containsCategory(String query) {
+    return categories.any((element) => element.name == query);
   }
 
   bool contains(String query, LanguageElement languageElement) {
