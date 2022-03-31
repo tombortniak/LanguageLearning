@@ -4,12 +4,14 @@ class LabeledCheckbox extends StatefulWidget {
   String label;
   bool isDisabled;
   bool isChecked;
+  Function onChanged;
   LabeledCheckbox(
       {Key? key,
+      required this.onChanged,
       required this.isChecked,
       required this.label,
       this.isDisabled = false})
-      : super(key: key) {}
+      : super(key: key);
 
   @override
   State<LabeledCheckbox> createState() => _LabeledCheckboxState();
@@ -25,9 +27,7 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
           onChanged: widget.isDisabled
               ? null
               : (bool? value) {
-                  setState(() {
-                    widget.isChecked = value!;
-                  });
+                  widget.onChanged();
                 },
         ),
         SizedBox(

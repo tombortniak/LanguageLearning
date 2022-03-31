@@ -27,8 +27,8 @@ class HomePage extends StatelessWidget {
             children: [
               ElevatedButton(
                 child: Container(
-                  width: 120.0,
-                  height: 120.0,
+                  width: 110.0,
+                  height: 110.0,
                   margin: EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -58,8 +58,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 120.0,
-                  height: 120.0,
+                  width: 110.0,
+                  height: 110.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -89,8 +89,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 120.0,
-                  height: 120.0,
+                  width: 110.0,
+                  height: 110.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -114,8 +114,8 @@ class HomePage extends StatelessWidget {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 120.0,
-                  height: 120.0,
+                  width: 110.0,
+                  height: 110.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

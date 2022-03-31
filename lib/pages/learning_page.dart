@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:language_learning/pages/question_page.dart';
+import 'package:language_learning/constants.dart';
+import 'package:tuple/tuple.dart';
+import 'package:language_learning/database/database.dart';
 
 class LearningPage extends StatefulWidget {
-  const LearningPage({Key? key}) : super(key: key);
+  final Tuple3<List<Word>, List<Verb>, List<Phrase>> learningContent;
+
+  const LearningPage({Key? key, required this.learningContent})
+      : super(key: key);
 
   @override
   State<LearningPage> createState() => _LearningPageState();
@@ -12,7 +19,7 @@ class _LearningPageState extends State<LearningPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(),
+      body: Text(widget.learningContent.toString()),
     );
   }
 }
