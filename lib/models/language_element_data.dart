@@ -124,6 +124,44 @@ class LanguageElementData extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<Category> getCategoriesBy(Language language) {
+    List<int> categoriesId = [1];
+
+    var languageWords =
+        words.where((element) => element.language == language.id);
+    var languageVerbs =
+        verbs.where((element) => element.language == language.id);
+    var languagePhrases =
+        phrases.where((element) => element.language == language.id);
+
+    for (var word in languageWords) {
+      if (!categoriesId.contains(word.category)) {
+        categoriesId.add(word.category!);
+      }
+    }
+
+    for (var verb in languageVerbs) {
+      if (!categoriesId.contains(verb.category)) {
+        categoriesId.add(verb.category!);
+      }
+    }
+
+    for (var phrase in languagePhrases) {
+      if (!categoriesId.contains(phrase.category)) {
+        categoriesId.add(phrase.category!);
+      }
+    }
+    categoriesId.removeAt(0);
+    var categoriesByLanguage = [
+      categories.first,
+      ...categories
+          .where((element) => categoriesId.contains(element.id))
+          .toList()
+    ];
+
+    return categoriesByLanguage;
+  }
+
   List<Category> filterCategories(String query) {
     return categories.where((element) => element.name.contains(query)).toList();
   }

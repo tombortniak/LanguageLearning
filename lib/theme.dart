@@ -55,7 +55,7 @@ class LanguageLearningTheme {
         style: ElevatedButton.styleFrom(
           primary: Colors.deepPurple,
           textStyle: darkTextTheme.headline5,
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(20.0),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(20.0),

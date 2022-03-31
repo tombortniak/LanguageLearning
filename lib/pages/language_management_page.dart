@@ -82,7 +82,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                           .where((e) => e.id == element.category)
                           .toList()
                           .first
-                          .toString(),
+                          .name,
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
               ],

@@ -501,7 +501,8 @@ class _ElementFormState extends State<ElementForm> {
                             ),
                             showSearchBox: true,
                             selectedItem: selectedCategory,
-                            items: languageElementData.categories,
+                            items: languageElementData
+                                .getCategoriesBy(widget.language),
                             itemAsString: (Category? category) {
                               return category!.name;
                             },
