@@ -3,17 +3,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:language_learning/components/element_card.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
-import 'package:language_learning/constants.dart';
 import 'package:language_learning/components/element_form.dart';
+import 'package:language_learning/constants.dart' hide Language;
+import 'package:language_learning/database/database.dart';
 
 class LanguageManagementPage extends StatefulWidget {
   final LanguageElement languageElement;
-  final List<String> specialCharacters;
   final Language language;
 
   LanguageManagementPage({
     required this.languageElement,
-    required this.specialCharacters,
     required this.language,
   });
 
@@ -51,36 +50,42 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text(elementName),
-            Text(
-              element.content,
-              style: Theme.of(context).textTheme.bodyText1,
-            )
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text('tłumaczenie'),
-            Text(
-              element.translation,
-              style: Theme.of(context).textTheme.bodyText1,
-            )
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text('kategoria'),
-            Text(
-              context
-                  .read<LanguageElementData>()
-                  .categories
-                  .where((e) => e.id == element.category)
-                  .toList()
-                  .first
-                  .name,
-              style: Theme.of(context).textTheme.bodyText1,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  elementName,
+                ),
+                Text(
+                  'tłumaczenie',
+                ),
+                Text('kategoria'),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  element.content,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                Text(
+                  element.translation,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                Text(
+                  element.category == 0
+                      ? 'brak'
+                      : context
+                          .read<LanguageElementData>()
+                          .categories
+                          .where((e) => e.id == element.category)
+                          .toList()
+                          .first
+                          .toString(),
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+              ],
             ),
           ],
         ),
@@ -94,30 +99,30 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('1. osoba'),
-                  Text(
-                    element.firstPersonSingular,
-                    style: Theme.of(context).textTheme.bodyText1,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('1. osoba'),
+                      Text('2. osoba'),
+                      Text('3. osoba'),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('2. osoba'),
-                  Text(
-                    element.secondPersonSingular,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('3. osoba'),
-                  Text(
-                    element.thirdPersonSingular,
-                    style: Theme.of(context).textTheme.bodyText1,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        element.firstPersonSingular,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Text(
+                        element.secondPersonSingular,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Text(
+                        element.thirdPersonSingular,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -128,33 +133,33 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('1. osoba'),
-                  Text(
-                    element.firstPersonPlural,
-                    style: Theme.of(context).textTheme.bodyText1,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('1. osoba'),
+                      Text('2. osoba'),
+                      Text('3. osoba'),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        element.firstPersonPlural,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Text(
+                        element.secondPersonPlural,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Text(
+                        element.thirdPersonPlural,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('2. osoba'),
-                  Text(
-                    element.secondPersonPlural,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('3. osoba'),
-                  Text(
-                    element.thirdPersonPlural,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              )
             ],
           ),
       ],
@@ -166,12 +171,6 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
     super.initState();
     fToast = FToast();
     fToast?.init(context);
-    editedFields = List.generate(
-        context
-            .read<LanguageElementData>()
-            .getElements(widget.languageElement)
-            .length,
-        (index) => false);
   }
 
   @override
@@ -186,11 +185,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
         builder: (context, languageElementData, child) {
           var languageElements = [];
           if (widget.languageElement == LanguageElement.word) {
-            languageElements = languageElementData.viewLanguageElements.item1;
+            languageElements = languageElementData.getWords(widget.language);
           } else if (widget.languageElement == LanguageElement.verb) {
-            languageElements = languageElementData.viewLanguageElements.item2;
+            languageElements = languageElementData.getVerbs(widget.language);
           } else {
-            languageElements = languageElementData.viewLanguageElements.item3;
+            languageElements = languageElementData.getPhrases(widget.language);
           }
           return Scaffold(
             body: Column(

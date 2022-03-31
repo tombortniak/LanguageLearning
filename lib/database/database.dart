@@ -9,7 +9,7 @@ part 'database.g.dart';
 
 class Phrases extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get language => text()();
+  IntColumn get language => integer().references(Languages, #id)();
   TextColumn get content => text()();
   TextColumn get translation => text()();
   IntColumn get category => integer().nullable().references(Categories, #id)();
@@ -17,7 +17,7 @@ class Phrases extends Table {
 
 class Verbs extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get language => text()();
+  IntColumn get language => integer().references(Languages, #id)();
   TextColumn get content => text()();
   TextColumn get translation => text()();
   TextColumn get firstPersonSingular => text()();
@@ -31,10 +31,16 @@ class Verbs extends Table {
 
 class Words extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get language => text()();
+  IntColumn get language => integer().references(Languages, #id)();
   TextColumn get content => text()();
   TextColumn get translation => text()();
-  IntColumn get category => integer().references(Categories, #id)();
+  IntColumn get category => integer().nullable().references(Categories, #id)();
+}
+
+@DataClassName("Language")
+class Languages extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
 }
 
 @DataClassName("Category")
@@ -51,7 +57,7 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [Words, Verbs, Phrases, Categories])
+@DriftDatabase(tables: [Words, Verbs, Phrases, Categories, Languages])
 class LanguageDatabase extends _$LanguageDatabase {
   LanguageDatabase() : super(_openConnection());
 
@@ -66,6 +72,10 @@ class LanguageDatabase extends _$LanguageDatabase {
         name: 'inne',
       ));
     });
+  }
+
+  Future<List<Language>> getLanguages() {
+    return (select(languages)).get();
   }
 
   Future getAllCategories() {
@@ -83,7 +93,7 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<List<Word>> getWords(Language language) {
-    return (select(words)..where((tbl) => tbl.language.equals(language.name)))
+    return (select(words)..where((tbl) => tbl.language.equals(language.id)))
         .get();
   }
 
@@ -92,7 +102,7 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<List<Verb>> getVerbs(Language language) {
-    return (select(verbs)..where((tbl) => tbl.language.equals(language.name)))
+    return (select(verbs)..where((tbl) => tbl.language.equals(language.id)))
         .get();
   }
 
@@ -101,12 +111,24 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future<List<Phrase>> getPhrases(Language language) {
-    return (select(phrases)..where((tbl) => tbl.language.equals(language.name)))
+    return (select(phrases)..where((tbl) => tbl.language.equals(language.id)))
         .get();
   }
 
   Future<List<Phrase>> getAllPhrases() {
     return (select(phrases)).get();
+  }
+
+  Future removeLanguage(Language language) {
+    return (delete(languages)..where((tbl) => tbl.id.equals(language.id))).go();
+  }
+
+  Future updateLanguage(Language language) {
+    return update(languages).replace(language);
+  }
+
+  Future addLanguage(LanguagesCompanion language) {
+    return into(languages).insertReturning(language);
   }
 
   Future addCategory(CategoriesCompanion category) {
@@ -124,7 +146,12 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future removeWord(Word word) {
-    return (delete(words)..where((t) => t.id.equals(word.id))).go();
+    return (delete(words)..where((tbl) => tbl.id.equals(word.id))).go();
+  }
+
+  Future removeWordsOf(Language language) {
+    return (delete(words)..where((tbl) => tbl.language.equals(language.id)))
+        .go();
   }
 
   Future removeAllWords() {
@@ -141,7 +168,12 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future removeVerb(Verb verb) {
-    return (delete(verbs)..where((t) => t.id.equals(verb.id))).go();
+    return (delete(verbs)..where((tbl) => tbl.id.equals(verb.id))).go();
+  }
+
+  Future removeVerbsOf(Language language) {
+    return (delete(verbs)..where((tbl) => tbl.language.equals(language.id)))
+        .go();
   }
 
   Future removeAllVerbs() {
@@ -159,7 +191,12 @@ class LanguageDatabase extends _$LanguageDatabase {
   }
 
   Future removePhrase(Phrase phrase) {
-    return (delete(phrases)..where((t) => t.id.equals(phrase.id))).go();
+    return (delete(phrases)..where((tbl) => tbl.id.equals(phrase.id))).go();
+  }
+
+  Future removePhrasesOf(Language language) {
+    return (delete(phrases)..where((tbl) => tbl.language.equals(language.id)))
+        .go();
   }
 
   Future removeAllPhrases() {

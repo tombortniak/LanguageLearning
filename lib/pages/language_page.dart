@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:language_learning/components/element_form.dart';
-import 'package:language_learning/constants.dart';
+import 'package:language_learning/constants.dart' hide Language;
 import 'package:language_learning/pages/language_management_page.dart';
+import 'package:language_learning/database/database.dart';
 
 class LanguagePage extends StatefulWidget {
   final Language language;
@@ -53,7 +54,7 @@ class _LanguagePageState extends State<LanguagePage>
                 ),
               ],
             ),
-            title: Text('Język ${kLanguageNameTranslations[widget.language]}'),
+            title: Text('Język ${widget.language.name}'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.add),
@@ -91,17 +92,14 @@ class _LanguagePageState extends State<LanguagePage>
               LanguageManagementPage(
                 languageElement: LanguageElement.word,
                 language: widget.language,
-                specialCharacters: widget.specialCharacters,
               ),
               LanguageManagementPage(
                 languageElement: LanguageElement.verb,
                 language: widget.language,
-                specialCharacters: widget.specialCharacters,
               ),
               LanguageManagementPage(
                 languageElement: LanguageElement.phrase,
                 language: widget.language,
-                specialCharacters: widget.specialCharacters,
               ),
             ],
           ),

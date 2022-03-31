@@ -1,99 +1,88 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:language_learning/constants.dart';
+import 'package:language_learning/constants.dart' hide Language;
 import 'package:language_learning/database/database.dart';
 import 'package:tuple/tuple.dart';
 import 'package:provider/provider.dart';
+import 'package:language_learning/database/database.dart';
 
 class LanguageElementData extends ChangeNotifier {
-  Tuple3<List<Word>, List<Verb>, List<Phrase>> languageElements =
-      Tuple3<List<Word>, List<Verb>, List<Phrase>>([], [], []);
-  Tuple3<List<Word>, List<Verb>, List<Phrase>> viewLanguageElements =
-      Tuple3<List<Word>, List<Verb>, List<Phrase>>([], [], []);
+  List<Word> words = [];
+  List<Verb> verbs = [];
+  List<Phrase> phrases = [];
   List<Category> categories = [];
+  List<Language> languages = [];
 
   BuildContext context;
 
   LanguageElementData({required this.context});
 
   void initalize(
-      Tuple4<List<Word>, List<Verb>, List<Phrase>, List<Category>> elements) {
-    languageElements = Tuple3(elements.item1, elements.item2, elements.item3);
-    viewLanguageElements = Tuple3(List.from(languageElements.item1),
-        List.from(languageElements.item2), List.from(languageElements.item3));
+      Tuple5<List<Word>, List<Verb>, List<Phrase>, List<Category>,
+              List<Language>>
+          elements) {
+    words = elements.item1;
+    verbs = elements.item2;
+    phrases = elements.item3;
     categories = elements.item4;
+    languages = elements.item5;
   }
 
   Future addCategory(CategoriesCompanion category) async {
-    var row = await Provider.of<LanguageDatabase>(context, listen: false)
-        .addCategory(category);
+    var row = await context.read<LanguageDatabase>().addCategory(category);
     categories.add(row);
+    notifyListeners();
+  }
+
+  Future addLanguage(LanguagesCompanion language) async {
+    var row = await context.read<LanguageDatabase>().addLanguage(language);
+    languages.add(row);
     notifyListeners();
   }
 
   Future addElement(dynamic element, LanguageElement languageElement) async {
     if (languageElement == LanguageElement.word) {
-      var row = await Provider.of<LanguageDatabase>(context, listen: false)
-          .addWord(element);
-      languageElements.item1.add(row);
-      viewLanguageElements.item1.add(row);
+      var row = await context.read<LanguageDatabase>().addWord(element);
+      words.add(row);
     } else if (languageElement == LanguageElement.verb) {
-      var row = await Provider.of<LanguageDatabase>(context, listen: false)
-          .addVerb(element);
-      languageElements.item2.add(row);
-      viewLanguageElements.item2.add(row);
+      var row = await context.read<LanguageDatabase>().addVerb(element);
+      verbs.add(row);
     } else {
-      final row = await Provider.of<LanguageDatabase>(context, listen: false)
+      final row = await context
+          .read<LanguageDatabase>()
           .addPhrase(element as PhrasesCompanion);
-      languageElements.item3.add(row);
-      viewLanguageElements.item3.add(row);
+      phrases.add(row);
     }
     notifyListeners();
   }
 
   Future updateElement(dynamic element, LanguageElement languageElement) async {
     if (languageElement == LanguageElement.word) {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .updateWord(element);
-      languageElements.item1[languageElements.item1
-          .indexWhere((e) => e.id == (element as Word).id)] = element as Word;
-      viewLanguageElements.item1[viewLanguageElements.item1
-          .indexWhere((e) => e.id == element.id)] = element;
+      await context.read<LanguageDatabase>().updateWord(element);
+      words[words.indexWhere((e) => e.id == (element as Word).id)] =
+          element as Word;
     } else if (languageElement == LanguageElement.verb) {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .updateVerb(element);
-      languageElements.item2[languageElements.item2
-          .indexWhere((e) => e.id == (element as Verb).id)] = element as Verb;
-      viewLanguageElements.item2[viewLanguageElements.item2
-          .indexWhere((e) => e.id == element.id)] = element;
+      await context.read<LanguageDatabase>().updateVerb(element);
+      verbs[verbs.indexWhere((e) => e.id == (element as Verb).id)] =
+          element as Verb;
     } else {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .updatePhrase(element);
-      languageElements.item3[languageElements.item3
-              .indexWhere((e) => e.id == (element as Phrase).id)] =
+      await context.read<LanguageDatabase>().updatePhrase(element);
+      phrases[phrases.indexWhere((e) => e.id == (element as Word).id)] =
           element as Phrase;
-      viewLanguageElements.item3[viewLanguageElements.item3
-          .indexWhere((e) => e.id == element.id)] = element;
     }
     notifyListeners();
   }
 
   Future removeElement(dynamic element, LanguageElement languageElement) async {
     if (languageElement == LanguageElement.word) {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .removeWord(element as Word);
-      languageElements.item1.removeWhere((e) => e.id == element.id);
-      viewLanguageElements.item1.removeWhere((e) => e.id == element.id);
+      await context.read<LanguageDatabase>().removeWord(element as Word);
+      words.removeWhere((e) => e.id == element.id);
     } else if (languageElement == LanguageElement.verb) {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .removeVerb(element as Verb);
-      languageElements.item2.removeWhere((e) => e.id == element.id);
-      viewLanguageElements.item2.removeWhere((e) => e.id == element.id);
+      await context.read<LanguageDatabase>().removeVerb(element as Verb);
+      verbs.removeWhere((e) => e.id == element.id);
     } else {
-      await Provider.of<LanguageDatabase>(context, listen: false)
-          .removePhrase(element as Phrase);
-      languageElements.item3.removeWhere((e) => e.id == element.id);
-      viewLanguageElements.item3.removeWhere((e) => e.id == element.id);
+      await context.read<LanguageDatabase>().removePhrase(element as Phrase);
+      phrases.removeWhere((e) => e.id == element.id);
     }
     notifyListeners();
   }
@@ -104,12 +93,24 @@ class LanguageElementData extends ChangeNotifier {
 
   List<dynamic> getElements(LanguageElement languageElement) {
     if (languageElement == LanguageElement.word) {
-      return languageElements.item1;
+      return words;
     } else if (languageElement == LanguageElement.verb) {
-      return languageElements.item2;
+      return verbs;
     } else {
-      return languageElements.item3;
+      return phrases;
     }
+  }
+
+  List<Word> getWords(Language language) {
+    return words.where((element) => element.language == language.id).toList();
+  }
+
+  List<Verb> getVerbs(Language language) {
+    return verbs.where((element) => element.language == language.id).toList();
+  }
+
+  List<Phrase> getPhrases(Language language) {
+    return phrases.where((element) => element.language == language.id).toList();
   }
 
   void filter(String query, LanguageElement languageElement) {
@@ -128,22 +129,22 @@ class LanguageElementData extends ChangeNotifier {
   }
 
   void filterWords(String query) {
-    viewLanguageElements.item1.clear();
-    viewLanguageElements.item1.addAll(languageElements.item1
+    words.clear();
+    words.addAll(words
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }
 
   void filterVerbs(String query) {
-    viewLanguageElements.item2.clear();
-    viewLanguageElements.item2.addAll(languageElements.item2
+    verbs.clear();
+    verbs.addAll(verbs
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }
 
   void filterPhrases(String query) {
-    viewLanguageElements.item3.clear();
-    viewLanguageElements.item3.addAll(languageElements.item3
+    phrases.clear();
+    phrases.addAll(phrases
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }
@@ -154,11 +155,11 @@ class LanguageElementData extends ChangeNotifier {
 
   bool contains(String query, LanguageElement languageElement) {
     if (languageElement == LanguageElement.word) {
-      return languageElements.item1.any((e) => e.content == query);
+      return words.any((e) => e.content == query);
     } else if (languageElement == LanguageElement.verb) {
-      return languageElements.item2.any((e) => e.content == query);
+      return verbs.any((e) => e.content == query);
     } else {
-      return languageElements.item3.any((e) => e.content == query);
+      return phrases.any((e) => e.content == query);
     }
   }
 }

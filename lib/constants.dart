@@ -11,6 +11,8 @@ const kLanguageElementTranslations = {
   LanguageElement.phrase: 'fraza'
 };
 
+enum MessageType { error, success }
+
 enum Language { spanish, english }
 
 enum LanguageElement { word, verb, phrase }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
-import 'package:language_learning/constants.dart';
+import 'package:language_learning/constants.dart' hide Language;
 import 'package:drift/drift.dart' as drift;
 import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
@@ -42,7 +42,9 @@ class _ElementFormState extends State<ElementForm> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = context.read<LanguageElementData>().categories.first;
+    selectedCategory = Provider.of<LanguageElementData>(context, listen: false)
+        .categories
+        .first;
     fToast = FToast();
     fToast?.init(context);
     if (widget.languageElement == LanguageElement.verb) {
@@ -96,7 +98,7 @@ class _ElementFormState extends State<ElementForm> {
     }
   }
 
-  void onSubmittedNewCategory(String newCategory) {
+  void onSubmittedNewCategory(String newCategory) async {
     if (newCategory.isEmpty) {
       showToast(
         'Nazwa nie może być pusta',
@@ -111,9 +113,11 @@ class _ElementFormState extends State<ElementForm> {
           Icons.error,
         );
       } else {
-        context
+        await context
             .read<LanguageElementData>()
-            .addCategory(CategoriesCompanion(name: drift.Value(newCategory)));
+            .addCategory(CategoriesCompanion(
+              name: drift.Value(newCategory),
+            ));
         showToast('Kategoria została dodana', Colors.greenAccent, Icons.check);
         newCategoryTextController.clear();
         setState(() {
@@ -121,8 +125,10 @@ class _ElementFormState extends State<ElementForm> {
               .read<LanguageElementData>()
               .categories
               .where((element) => element.name == newCategory)
+              .toList()
               .first;
         });
+        Navigator.pop(context);
       }
     }
   }
@@ -167,26 +173,27 @@ class _ElementFormState extends State<ElementForm> {
   Tuple2<dynamic, String> makeNewElement() {
     String message = '';
     var element;
+    int categoryId = selectedCategory!.id;
     if (widget.languageElement == LanguageElement.word) {
       message = 'zostało dodane';
       element = WordsCompanion(
-        language: drift.Value(widget.language.name),
+        language: drift.Value(widget.language.id),
         content: drift.Value(_textControllers[0].text),
         translation: drift.Value(_textControllers[1].text),
-        category: drift.Value(selectedCategory!.id),
+        category: drift.Value(categoryId),
       );
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została dodana';
       element = PhrasesCompanion(
-        language: drift.Value(widget.language.name),
+        language: drift.Value(widget.language.id),
         content: drift.Value(_textControllers[0].text),
         translation: drift.Value(_textControllers[1].text),
-        category: drift.Value(selectedCategory!.id),
+        category: drift.Value(categoryId),
       );
     } else {
       message = 'został dodany';
       element = VerbsCompanion(
-        language: drift.Value(widget.language.name),
+        language: drift.Value(widget.language.id),
         content: drift.Value(_textControllers[0].text),
         translation: drift.Value(_textControllers[1].text),
         firstPersonSingular: drift.Value(_textControllers[2].text),
@@ -195,7 +202,7 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: drift.Value(_textControllers[5].text),
         secondPersonPlural: drift.Value(_textControllers[6].text),
         thirdPersonPlural: drift.Value(_textControllers[7].text),
-        category: drift.Value(selectedCategory!.id),
+        category: drift.Value(categoryId),
       );
     }
 
@@ -204,28 +211,29 @@ class _ElementFormState extends State<ElementForm> {
 
   Tuple2<dynamic, String> makeEditedElement() {
     String message = '';
+    int categoryId = selectedCategory!.id;
     var element;
     if (widget.languageElement == LanguageElement.word) {
       message = 'zostało zmienione';
       element = Word(
           id: widget.initialValue.id,
-          language: widget.language.name,
+          language: widget.language.id,
           content: _textControllers[0].text,
           translation: _textControllers[1].text,
-          category: selectedCategory!.id);
+          category: categoryId);
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została zmieniona';
       element = Phrase(
           id: widget.initialValue.id,
-          language: widget.language.name,
+          language: widget.language.id,
           content: _textControllers[0].text,
           translation: _textControllers[1].text,
-          category: selectedCategory!.id);
+          category: categoryId);
     } else {
       message = 'został zmieniony';
       element = Verb(
         id: widget.initialValue.id,
-        language: widget.language.name,
+        language: widget.language.id,
         content: _textControllers[0].text,
         translation: _textControllers[1].text,
         firstPersonSingular: _textControllers[2].text,
@@ -234,7 +242,7 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: _textControllers[5].text,
         secondPersonPlural: _textControllers[6].text,
         thirdPersonPlural: _textControllers[7].text,
-        category: selectedCategory!.id,
+        category: categoryId,
       );
     }
 
@@ -469,14 +477,6 @@ class _ElementFormState extends State<ElementForm> {
                             onChanged: ((Category? value) {
                               selectedCategory = value;
                             }),
-                            onFind: (String? filter) async {
-                              var categories = await languageElementData
-                                  .categories
-                                  .where((element) =>
-                                      element.name.contains(filter!))
-                                  .toList();
-                              return categories;
-                            },
                             mode: Mode.BOTTOM_SHEET,
                             searchFieldProps: TextFieldProps(
                               decoration: InputDecoration(
@@ -575,9 +575,7 @@ class _ElementFormState extends State<ElementForm> {
                                   );
                                 });
                           },
-                          icon: Icon(
-                            Icons.add_circle,
-                          ),
+                          icon: Icon(Icons.add),
                         ),
                       ),
                     ],

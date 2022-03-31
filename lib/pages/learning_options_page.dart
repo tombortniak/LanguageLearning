@@ -21,22 +21,21 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
   List<bool> categoriesSelectedValues = [];
   List<FilterChip> categoryChips = [];
   TextEditingController searchTextController = TextEditingController();
+  FocusNode searchFieldNode = FocusNode();
 
   void buildCategoryChips([String query = '']) {
-    List<Category> categories = [];
-    if (query.isNotEmpty) {
-      categories = context.read<LanguageElementData>().filterCategories(query);
-    } else {
-      categories = context.read<LanguageElementData>().getCategories();
-    }
-    categoriesSelectedValues =
-        List.generate(categories.length, (index) => false);
+    var categories =
+        context.read<LanguageElementData>().filterCategories(query);
     categoryChips = List.generate(
       categories.length,
       (index) => FilterChip(
+        selected: categoriesSelectedValues[index],
+        showCheckmark: true,
         label: Text(categories[index].name),
-        onSelected: (value) {
-          categoriesSelectedValues[index] = value;
+        onSelected: (bool value) {
+          setState(() {
+            categoriesSelectedValues[index] = value;
+          });
         },
       ),
     );
@@ -45,23 +44,68 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
   @override
   void initState() {
     super.initState();
+    categoriesSelectedValues = List.generate(
+        context.read<LanguageElementData>().categories.length,
+        (index) => false);
     buildCategoryChips();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Column(
+    return GestureDetector(
+      onTap: () {
+        searchFieldNode.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Container(
+          margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Elementy do nauki',
+                        textAlign: TextAlign.center,
+                      ),
+                      Container(
+                        child: Divider(),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          LabeledRadio(
+                            value: LearningOption.all,
+                            groupValue: _learningOption,
+                            label: 'wszystko',
+                            onChanged: (LearningOption? value) {
+                              setState(() {
+                                _learningOption = value!;
+                              });
+                            },
+                          ),
+                          LabeledRadio(
+                            value: LearningOption.custom,
+                            groupValue: _learningOption,
+                            label: 'niestandardowo',
+                            onChanged: (LearningOption? value) {
+                              setState(() {
+                                _learningOption = value!;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ]),
+              ),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Elementy do nauki',
+                      'Części języka',
                       textAlign: TextAlign.center,
                     ),
                     Container(
@@ -70,128 +114,88 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        LabeledRadio(
-                          value: LearningOption.all,
-                          groupValue: _learningOption,
-                          label: 'wszystko',
-                          onChanged: (LearningOption? value) {
-                            setState(() {
-                              _learningOption = value!;
-                            });
-                          },
+                        LabeledCheckbox(
+                          isDisabled: _learningOption == LearningOption.custom
+                              ? false
+                              : true,
+                          label: 'słowa',
+                          isChecked: wordOptionValue,
                         ),
-                        LabeledRadio(
-                          value: LearningOption.custom,
-                          groupValue: _learningOption,
-                          label: 'niestandardowo',
-                          onChanged: (LearningOption? value) {
-                            setState(() {
-                              _learningOption = value!;
-                            });
-                          },
-                        )
+                        LabeledCheckbox(
+                          isDisabled: _learningOption == LearningOption.custom
+                              ? false
+                              : true,
+                          label: 'czasowniki',
+                          isChecked: verbOptionValue,
+                        ),
+                        LabeledCheckbox(
+                          isDisabled: _learningOption == LearningOption.custom
+                              ? false
+                              : true,
+                          label: 'frazy',
+                          isChecked: phraseOptionValue,
+                        ),
                       ],
-                    ),
-                  ]),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Części języka',
-                    textAlign: TextAlign.center,
-                  ),
-                  Container(
-                    child: Divider(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      LabeledCheckbox(
-                        isDisabled: _learningOption == LearningOption.custom
-                            ? false
-                            : true,
-                        label: 'słowa',
-                        isChecked: wordOptionValue,
-                      ),
-                      LabeledCheckbox(
-                        isDisabled: _learningOption == LearningOption.custom
-                            ? false
-                            : true,
-                        label: 'czasowniki',
-                        isChecked: verbOptionValue,
-                      ),
-                      LabeledCheckbox(
-                        isDisabled: _learningOption == LearningOption.custom
-                            ? false
-                            : true,
-                        label: 'frazy',
-                        isChecked: phraseOptionValue,
-                      ),
-                    ],
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Kategorie',
-                    textAlign: TextAlign.center,
-                  ),
-                  Container(
-                    child: Divider(),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0.0),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Colors.deepPurple),
-                          borderRadius: BorderRadius.circular(20.0)),
-                      hintText: 'Szukaj',
-                      hintStyle: Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Colors.grey, fontSize: 14.0),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                      ),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(20.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Kategorie',
+                      textAlign: TextAlign.center,
+                    ),
+                    Container(
+                      child: Divider(),
+                    ),
+                    TextField(
+                      enabled: _learningOption == LearningOption.custom,
+                      focusNode: searchFieldNode,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0.0),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                const BorderSide(color: Colors.deepPurple),
+                            borderRadius: BorderRadius.circular(20.0)),
+                        hintText: 'Szukaj',
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText2
+                            ?.copyWith(color: Colors.grey, fontSize: 14.0),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20.0),
+                          ),
                         ),
                       ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        // viewCategories = context
-                        //     .read<LanguageElementData>()
-                        //     .filterCategories(value);
+                      onChanged: (value) {
                         buildCategoryChips(value);
-                      });
-                    },
-                    onEditingComplete: () {},
-                    controller: searchTextController,
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Wrap(
-                        spacing: 10.0,
-                        direction: Axis.horizontal,
-                        children: categoryChips,
-                      ),
+                      },
+                      onEditingComplete: () {},
+                      controller: searchTextController,
                     ),
-                  )
-                ],
-              ),
-            )
-          ],
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Wrap(
+                          spacing: 10.0,
+                          direction: Axis.horizontal,
+                          children: categoryChips,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
