@@ -135,10 +135,11 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
     return selectedCategories;
   }
 
-  Tuple3<List<Word>, List<Verb>, List<Phrase>> createLearningContent() {
-    List<Word> words = [];
-    List<Verb> verbs = [];
-    List<Phrase> phrases = [];
+  List<dynamic> createLearningContent() {
+    List<dynamic> learningContent = [];
+    // List<Word> words = [];
+    // List<Verb> verbs = [];
+    // List<Phrase> phrases = [];
     var allWords =
         context.read<LanguageElementData>().getWords(selectedLanguage!);
     var allVerbs =
@@ -146,35 +147,35 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
     var allPhrases =
         context.read<LanguageElementData>().getPhrases(selectedLanguage!);
     if (learningOption == LearningOption.all) {
-      return Tuple3(allWords, allVerbs, allPhrases);
+      return [...allWords, ...allVerbs, ...allPhrases];
     } else {
       var selectedCategories = getSelectedCategories();
       if (selectedCategories.isNotEmpty) {
         for (var selectedCategory in selectedCategories) {
-          words.addAll(allWords
+          learningContent.addAll(allWords
               .where((element) => element.category == selectedCategory.id)
               .toList());
-          verbs.addAll(allVerbs
+          learningContent.addAll(allVerbs
               .where((element) => element.category == selectedCategory.id)
               .toList());
-          phrases.addAll(allPhrases
+          learningContent.addAll(allPhrases
               .where((element) => element.category == selectedCategory.id)
               .toList());
         }
       } else {
         if (wordOptionValue) {
-          words = allWords;
+          learningContent.addAll(allWords);
         }
 
         if (verbOptionValue) {
-          verbs = allVerbs;
+          learningContent.addAll(allVerbs);
         }
 
         if (phraseOptionValue) {
-          phrases = allPhrases;
+          learningContent.addAll(allPhrases);
         }
       }
-      return Tuple3(words, verbs, phrases);
+      return learningContent;
     }
   }
 
@@ -356,8 +357,9 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
                 ),
               ),
               ElevatedButton(
-                  onPressed: onOptionsSubmitted,
-                  child: Text('Rozpocznij naukę'))
+                onPressed: onOptionsSubmitted,
+                child: Text('Rozpocznij naukę'),
+              )
             ],
           ),
         ),

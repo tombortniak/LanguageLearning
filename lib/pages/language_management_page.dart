@@ -92,16 +92,16 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
         if (widget.languageElement == LanguageElement.verb)
           Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
-              Text('Liczba pojedyncza'),
+              const Text('Liczba pojedyncza'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: const [
                       Text('1. osoba'),
                       Text('2. osoba'),
                       Text('3. osoba'),
@@ -126,16 +126,16 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
-              Text('Liczba mnoga'),
+              const Text('Liczba mnoga'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: const [
                       Text('1. osoba'),
                       Text('2. osoba'),
                       Text('3. osoba'),
@@ -195,11 +195,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
             body: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
+                  margin: const EdgeInsets.symmetric(vertical: 10.0),
                   width: width,
                   child: TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(5.0),
+                      contentPadding: const EdgeInsets.all(5.0),
                       focusedBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.deepPurple),
@@ -240,12 +240,12 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.headline4),
                     ),
-                    Expanded(
+                    const Expanded(
                       child: SizedBox(),
                     ),
                   ],
                 ),
-                Divider(),
+                const Divider(),
                 Expanded(
                   child: ListView.separated(
                     separatorBuilder: ((context, index) => const Divider()),
@@ -287,11 +287,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.check,
                                     color: Colors.black,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10.0,
                                   ),
                                   Text(

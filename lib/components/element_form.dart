@@ -266,7 +266,7 @@ class _ElementFormState extends State<ElementForm> {
           showToast(
             '${capitalize(kLanguageElementTranslations[widget.languageElement]!)} ${result.item2}',
             Colors.greenAccent,
-            Icons.error,
+            Icons.check,
           );
           Navigator.pop(context);
         } else {

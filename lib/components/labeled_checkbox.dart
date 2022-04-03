@@ -30,8 +30,8 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
                   widget.onChanged();
                 },
         ),
-        SizedBox(
-          width: 10.0,
+        const SizedBox(
+          width: 5.0,
         ),
         Text(
           widget.label,
