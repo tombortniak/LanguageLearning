@@ -43,58 +43,48 @@ class _LearningPageState extends State<LearningPage> {
       fieldsColors[i] = Colors.grey;
     }
     answerStatus = AnswerStatus.none;
+    fieldsNumber = elementsToLearn.elementAt(0).element is Verb ? 7 : 1;
     setState(() {});
+  }
+
+  bool checkField(int index) {
+    var learningElement = elementsToLearn.elementAt(0);
+    switch (index) {
+      case 0:
+        return textControllers[0].text == learningElement.element.translation;
+      case 1:
+        return textControllers[1].text ==
+            learningElement.element.firstPersonSingular;
+      case 2:
+        return textControllers[2].text ==
+            learningElement.element.secondPersonSingular;
+      case 3:
+        return textControllers[3].text ==
+            learningElement.element.thirdPersonSingular;
+      case 4:
+        return textControllers[4].text ==
+            learningElement.element.firstPersonPlural;
+      case 5:
+        return textControllers[5].text ==
+            learningElement.element.secondPersonPlural;
+      case 6:
+        return textControllers[6].text ==
+            learningElement.element.thirdPersonPlural;
+      default:
+        return false;
+    }
   }
 
   bool checkAnswer() {
     var learningElement = elementsToLearn.elementAt(0);
     bool answer = true;
-    if (textControllers[0].text != learningElement.element.translation) {
-      fieldsColors[0] = Colors.redAccent;
-      answer = false;
-    }
 
-    if (learningElement.element is Verb) {
-      if (textControllers[1].text !=
-          learningElement.element.firstPersonSingular) {
-        fieldsColors[1] = Colors.redAccent;
-        answer = false;
-      }
-
-      if (textControllers[2].text !=
-          learningElement.element.secondPersonSingular) {
-        fieldsColors[2] = Colors.redAccent;
-        answer = false;
-      }
-
-      if (textControllers[3].text !=
-          learningElement.element.thirdPersonSingular) {
-        fieldsColors[3] = Colors.redAccent;
-        answer = false;
-      }
-
-      if (textControllers[4].text !=
-          learningElement.element.firstPersonPlural) {
-        fieldsColors[4] = Colors.redAccent;
-        answer = false;
-      }
-
-      if (textControllers[5].text !=
-          learningElement.element.secondPersonPlural) {
-        fieldsColors[5] = Colors.redAccent;
-        answer = false;
-      }
-
-      if (textControllers[6].text !=
-          learningElement.element.thirdPersonPlural) {
-        fieldsColors[6] = Colors.redAccent;
-        answer = false;
-      }
-    }
-
-    if (answer) {
-      for (int i = 0; i < fieldsColors.length; ++i) {
+    for (int i = 0; i < fieldsNumber; ++i) {
+      if (checkField(i)) {
         fieldsColors[i] = Colors.greenAccent;
+      } else {
+        fieldsColors[i] = Colors.redAccent;
+        answer = false;
       }
     }
 
@@ -127,14 +117,17 @@ class _LearningPageState extends State<LearningPage> {
               Size(width, 60),
             ),
             child: TextFormField(
-              showCursor: answerStatus == AnswerStatus.none ? true : false,
+              enabled: answerStatus == AnswerStatus.none,
               controller: textControllers[i],
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: fieldsColors[i]),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.deepPurple),
+                ),
+                disabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: fieldsColors[i]),
                 ),
                 hintText: hint,
                 hintStyle: Theme.of(context).textTheme.bodyText2,

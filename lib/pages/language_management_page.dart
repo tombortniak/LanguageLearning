@@ -252,6 +252,11 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                     itemCount: languageElements.length,
                     itemBuilder: (BuildContext context, index) {
                       return Dismissible(
+                        dismissThresholds: const {
+                          DismissDirection.startToEnd: 0.4,
+                          DismissDirection.endToStart: 0.4
+                        },
+                        movementDuration: Duration(seconds: 1),
                         background: Container(
                           color: color,
                           alignment: AlignmentDirectional.centerStart,
