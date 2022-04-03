@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:collection';
+
+import 'package:flutter/material.dart' hide Stack;
+import 'package:language_learning/models/learning_element.dart';
 import 'package:language_learning/pages/learning_results_page.dart';
 import 'package:language_learning/constants.dart';
-import 'package:tuple/tuple.dart';
 import 'package:language_learning/database/database.dart';
 
 class LearningPage extends StatefulWidget {
@@ -14,70 +16,72 @@ class LearningPage extends StatefulWidget {
 }
 
 class _LearningPageState extends State<LearningPage> {
-  final formKey = GlobalKey<FormState>();
-  int currentElementIndex = 0;
   int fieldsNumber = 0;
   List<dynamic> learnedElements = [];
-  List<dynamic> otherElements = [];
+  Queue<LearningElement> elementsToLearn = Queue<LearningElement>();
   List<TextEditingController> textControllers =
       List.generate(7, (index) => TextEditingController());
   List<Color> fieldsColors = List.generate(7, (index) => Colors.deepPurple);
-  int errors = 0;
   String buttonText = 'Sprawdź';
-  bool isCurrentCorrect = false;
+  AnswerStatus answerStatus = AnswerStatus.none;
 
   @override
   void initState() {
     widget.learningContent.shuffle();
-    otherElements.addAll(widget.learningContent);
+    elementsToLearn.addAll(List.generate(
+        widget.learningContent.length,
+        (index) => LearningElement(
+            element: widget.learningContent[index], repetitions: 3)));
     super.initState();
   }
 
   void nextElement() {
-    learnedElements.add(widget.learningContent[currentElementIndex]);
-    otherElements.remove(widget.learningContent[currentElementIndex]);
-    currentElementIndex++;
     for (var controller in textControllers) {
       controller.clear();
     }
     for (int i = 0; i < fieldsColors.length; ++i) {
       fieldsColors[i] = Colors.deepPurple;
     }
-    isCurrentCorrect = false;
+    answerStatus = AnswerStatus.none;
     setState(() {});
   }
 
   bool checkAnswer() {
-    var element = widget.learningContent[currentElementIndex];
-    if (textControllers[0].text !=
-        widget.learningContent[currentElementIndex].translation) {
+    var learningElement = elementsToLearn.elementAt(0);
+    if (textControllers[0].text != learningElement.element.translation) {
       fieldsColors[0] = Colors.redAccent;
       setState(() {});
       return false;
     }
 
-    if (element is Verb) {
-      if (textControllers[1].text != element.firstPersonSingular) {
+    if (learningElement is Verb) {
+      if (textControllers[1].text !=
+          learningElement.element.firstPersonSingular) {
         return false;
       }
 
-      if (textControllers[2].text != element.secondPersonSingular) {
+      if (textControllers[2].text !=
+          learningElement.element.secondPersonSingular) {
         return false;
       }
 
-      if (textControllers[3].text != element.thirdPersonSingular) {
+      if (textControllers[3].text !=
+          learningElement.element.thirdPersonSingular) {
         return false;
       }
 
-      if (textControllers[4].text != element.firstPersonPlural) {
+      if (textControllers[4].text !=
+          learningElement.element.firstPersonPlural) {
         return false;
       }
 
-      if (textControllers[5].text != element.secondPersonPlural) {
+      if (textControllers[5].text !=
+          learningElement.element.secondPersonPlural) {
         return false;
       }
 
-      if (textControllers[6].text != element.thirdPersonPlural) {
+      if (textControllers[6].text !=
+          learningElement.element.thirdPersonPlural) {
         return false;
       }
     }
@@ -90,7 +94,7 @@ class _LearningPageState extends State<LearningPage> {
   }
 
   Form buildForm() {
-    fieldsNumber = currentElementIndex is Verb ? 7 : 1;
+    fieldsNumber = elementsToLearn.elementAt(0) is Verb ? 7 : 1;
     int personConjugation = 1;
     double width;
     String hint;
@@ -110,6 +114,7 @@ class _LearningPageState extends State<LearningPage> {
             Size(width, 60),
           ),
           child: TextFormField(
+            showCursor: answerStatus == AnswerStatus.none ? true : false,
             controller: textControllers[i],
             decoration: InputDecoration(
               focusedBorder: UnderlineInputBorder(
@@ -129,11 +134,10 @@ class _LearningPageState extends State<LearningPage> {
     }
 
     return Form(
-      key: formKey,
       child: Column(
         children: [
           boxes[0],
-          if (currentElementIndex is Verb)
+          if (elementsToLearn.elementAt(0) is Verb)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -175,24 +179,23 @@ class _LearningPageState extends State<LearningPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
                   'nauczone: ${learnedElements.length}',
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
-                Text('pozostałe: ${otherElements.length}',
+                Text(
+                    'liczba powtórzeń: ${elementsToLearn.elementAt(0).repetitions}',
                     style: Theme.of(context).textTheme.bodyText1),
-                Text('błędy: $errors',
-                    style: Theme.of(context).textTheme.bodyText1)
               ],
             ),
             Column(
               children: [
                 Center(
                   child: Text(
-                    widget.learningContent[currentElementIndex].content,
+                    elementsToLearn.elementAt(0).element.content,
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
@@ -202,13 +205,35 @@ class _LearningPageState extends State<LearningPage> {
                 buildForm(),
               ],
             ),
-            isCurrentCorrect
+            answerStatus != AnswerStatus.none
                 ? ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.greenAccent,
+                      primary: answerStatus == AnswerStatus.correct
+                          ? Colors.greenAccent
+                          : Colors.redAccent,
                     ),
                     onPressed: () {
-                      nextElement();
+                      var learningElement = elementsToLearn.removeFirst();
+                      if (answerStatus == AnswerStatus.correct) {
+                        learningElement.decreaseRepetitions(1);
+                      } else {
+                        learningElement.increaseRepetitions(1);
+                      }
+                      if (learningElement.repetitions > 0) {
+                        elementsToLearn.add(learningElement);
+                      } else {
+                        learnedElements.add(learningElement.element);
+                      }
+
+                      if (elementsToLearn.isEmpty) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const LearningResultsPage()));
+                      } else {
+                        nextElement();
+                      }
                     },
                     child: Text(
                       buttonText,
@@ -220,20 +245,12 @@ class _LearningPageState extends State<LearningPage> {
                   )
                 : ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        if (checkAnswer()) {
-                          if (currentElementIndex ==
-                              widget.learningContent.length - 1) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LearningResultsPage()));
-                          } else {
-                            isCurrentCorrect = true;
-                          }
-                        }
-                      });
+                      if (checkAnswer()) {
+                        answerStatus = AnswerStatus.correct;
+                      } else {
+                        answerStatus = AnswerStatus.incorrect;
+                      }
+                      setState(() {});
                     },
                     child: Text(buttonText),
                   )

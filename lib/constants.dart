@@ -20,3 +20,5 @@ enum LanguageElement { word, verb, phrase }
 enum PopupAction { edit, delete, details }
 
 enum LearningOption { all, custom }
+
+enum AnswerStatus { none, correct, incorrect }

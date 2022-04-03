@@ -1,11 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:language_learning/models/language_element_data.dart';
 import 'package:language_learning/pages/learning_options_page.dart';
 import 'language_selection_page.dart';
+import 'package:language_learning/constants.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  FToast? fToast;
+
+  @override
+  void initState() {
+    fToast = FToast();
+    fToast!.init(context);
+    super.initState();
+  }
+
+  void showMessage(MessageType messageType, String message) {
+    Color backgroundColor;
+    Color textColor;
+    IconData iconData;
+    if (messageType == MessageType.error) {
+      backgroundColor = Colors.redAccent;
+      textColor = Colors.white;
+      iconData = Icons.error;
+    } else {
+      backgroundColor = Colors.greenAccent;
+      textColor = Colors.black;
+      iconData = Icons.check;
+    }
+    fToast?.showToast(
+        gravity: ToastGravity.BOTTOM,
+        child: Container(
+          padding: const EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: backgroundColor),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                iconData,
+                color: textColor,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                message,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: textColor),
+              ),
+            ],
+          ),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +109,17 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LearningOptionsPage(),
-                      ));
+                  if (Provider.of<LanguageElementData>(context, listen: false)
+                      .languages
+                      .isEmpty) {
+                    showMessage(MessageType.error, 'Brak dodanych języków');
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LearningOptionsPage(),
+                        ));
+                  }
                 },
               ),
               ElevatedButton(
