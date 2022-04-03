@@ -21,7 +21,7 @@ class _LearningPageState extends State<LearningPage> {
   Queue<LearningElement> elementsToLearn = Queue<LearningElement>();
   List<TextEditingController> textControllers =
       List.generate(7, (index) => TextEditingController());
-  List<Color> fieldsColors = List.generate(7, (index) => Colors.deepPurple);
+  List<Color> fieldsColors = List.generate(7, (index) => Colors.grey);
   String buttonText = 'Sprawdź';
   AnswerStatus answerStatus = AnswerStatus.none;
 
@@ -40,7 +40,7 @@ class _LearningPageState extends State<LearningPage> {
       controller.clear();
     }
     for (int i = 0; i < fieldsColors.length; ++i) {
-      fieldsColors[i] = Colors.deepPurple;
+      fieldsColors[i] = Colors.grey;
     }
     answerStatus = AnswerStatus.none;
     setState(() {});
@@ -48,57 +48,68 @@ class _LearningPageState extends State<LearningPage> {
 
   bool checkAnswer() {
     var learningElement = elementsToLearn.elementAt(0);
+    bool answer = true;
     if (textControllers[0].text != learningElement.element.translation) {
       fieldsColors[0] = Colors.redAccent;
-      setState(() {});
-      return false;
+      answer = false;
     }
 
-    if (learningElement is Verb) {
+    if (learningElement.element is Verb) {
       if (textControllers[1].text !=
           learningElement.element.firstPersonSingular) {
-        return false;
+        fieldsColors[1] = Colors.redAccent;
+        answer = false;
       }
 
       if (textControllers[2].text !=
           learningElement.element.secondPersonSingular) {
-        return false;
+        fieldsColors[2] = Colors.redAccent;
+        answer = false;
       }
 
       if (textControllers[3].text !=
           learningElement.element.thirdPersonSingular) {
-        return false;
+        fieldsColors[3] = Colors.redAccent;
+        answer = false;
       }
 
       if (textControllers[4].text !=
           learningElement.element.firstPersonPlural) {
-        return false;
+        fieldsColors[4] = Colors.redAccent;
+        answer = false;
       }
 
       if (textControllers[5].text !=
           learningElement.element.secondPersonPlural) {
-        return false;
+        fieldsColors[5] = Colors.redAccent;
+        answer = false;
       }
 
       if (textControllers[6].text !=
           learningElement.element.thirdPersonPlural) {
-        return false;
+        fieldsColors[6] = Colors.redAccent;
+        answer = false;
       }
     }
 
-    for (int i = 0; i < fieldsColors.length; ++i) {
-      fieldsColors[i] = Colors.greenAccent;
+    if (answer) {
+      for (int i = 0; i < fieldsColors.length; ++i) {
+        fieldsColors[i] = Colors.greenAccent;
+      }
     }
+
     buttonText = 'Dalej';
-    return true;
+    setState(() {});
+
+    return answer;
   }
 
-  Form buildForm() {
-    fieldsNumber = elementsToLearn.elementAt(0) is Verb ? 7 : 1;
+  FocusTraversalGroup buildForm() {
+    fieldsNumber = elementsToLearn.elementAt(0).element is Verb ? 7 : 1;
     int personConjugation = 1;
     double width;
     String hint;
-    List<ConstrainedBox> boxes = [];
+    List<FocusTraversalOrder> fields = [];
     for (int i = 0; i < fieldsNumber; ++i) {
       if (i == 0) {
         width = MediaQuery.of(context).size.width * .7;
@@ -108,56 +119,67 @@ class _LearningPageState extends State<LearningPage> {
         hint = '$personConjugation. osoba';
       }
 
-      boxes.add(
-        ConstrainedBox(
-          constraints: BoxConstraints.tight(
-            Size(width, 60),
-          ),
-          child: TextFormField(
-            showCursor: answerStatus == AnswerStatus.none ? true : false,
-            controller: textControllers[i],
-            decoration: InputDecoration(
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: fieldsColors[i]),
-              ),
-              hintText: hint,
-              hintStyle: Theme.of(context).textTheme.bodyText2,
+      fields.add(
+        FocusTraversalOrder(
+          order: NumericFocusOrder((i + 1).toDouble()),
+          child: ConstrainedBox(
+            constraints: BoxConstraints.tight(
+              Size(width, 60),
             ),
-            style: Theme.of(context).textTheme.bodyText1,
+            child: TextFormField(
+              showCursor: answerStatus == AnswerStatus.none ? true : false,
+              controller: textControllers[i],
+              decoration: InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: fieldsColors[i]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurple),
+                ),
+                hintText: hint,
+                hintStyle: Theme.of(context).textTheme.bodyText2,
+              ),
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
           ),
         ),
       );
-      personConjugation++;
-      if (personConjugation == 4) {
-        personConjugation = 1;
+      if (i > 0) {
+        personConjugation++;
+        if (personConjugation == 4) {
+          personConjugation = 1;
+        }
       }
     }
 
-    return Form(
-      child: Column(
-        children: [
-          boxes[0],
-          if (elementsToLearn.elementAt(0) is Verb)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    boxes[1],
-                    boxes[2],
-                    boxes[3],
-                  ],
-                ),
-                Column(
-                  children: [
-                    boxes[4],
-                    boxes[5],
-                    boxes[6],
-                  ],
-                )
-              ],
-            )
-        ],
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: Form(
+        child: Column(
+          children: [
+            fields[0],
+            if (elementsToLearn.elementAt(0).element is Verb)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      fields[1],
+                      fields[2],
+                      fields[3],
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      fields[4],
+                      fields[5],
+                      fields[6],
+                    ],
+                  )
+                ],
+              )
+          ],
+        ),
       ),
     );
   }
@@ -250,6 +272,7 @@ class _LearningPageState extends State<LearningPage> {
                       } else {
                         answerStatus = AnswerStatus.incorrect;
                       }
+                      FocusScope.of(context).unfocus();
                       setState(() {});
                     },
                     child: Text(buttonText),
