@@ -216,8 +216,9 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                         ),
                       ),
                     ),
-                    onChanged: (value) {
-                      languageElementData.filter(value, widget.languageElement);
+                    onChanged: (value) async {
+                      await languageElementData.filter(
+                          value, widget.languageElement);
                     },
                     onEditingComplete: () {
                       FocusScope.of(context).unfocus();

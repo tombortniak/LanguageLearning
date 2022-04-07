@@ -24,6 +24,9 @@ class _LearningPageState extends State<LearningPage> {
   List<Color> fieldsColors = List.generate(7, (index) => Colors.grey);
   String buttonText = 'Sprawdź';
   AnswerStatus answerStatus = AnswerStatus.none;
+  double toLearnTabWidth = 0;
+  double learnedTabWidth = 0;
+  double progressWidth = 0;
 
   @override
   void initState() {
@@ -31,7 +34,7 @@ class _LearningPageState extends State<LearningPage> {
     elementsToLearn.addAll(List.generate(
         widget.learningContent.length,
         (index) => LearningElement(
-            element: widget.learningContent[index], repetitions: 3)));
+            element: widget.learningContent[index], repetitions: 1)));
     super.initState();
   }
 
@@ -187,6 +190,17 @@ class _LearningPageState extends State<LearningPage> {
 
   @override
   Widget build(BuildContext context) {
+    progressWidth = MediaQuery.of(context).size.width * .6;
+
+    int allElementsNumber = widget.learningContent.length;
+    int learnedNumber = learnedElements.length;
+    int toLearnNumber = allElementsNumber - learnedNumber;
+
+    double toLearnPercentage = toLearnNumber / allElementsNumber;
+    double learnedPercentage = learnedNumber / allElementsNumber;
+    toLearnTabWidth = progressWidth * toLearnPercentage;
+    learnedTabWidth = progressWidth * learnedPercentage;
+
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -194,18 +208,60 @@ class _LearningPageState extends State<LearningPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'nauczone: ${learnedElements.length}',
-                  style: Theme.of(context).textTheme.bodyText1,
+                Text('nauczone', style: Theme.of(context).textTheme.bodyText1),
+                SizedBox(
+                  width: 10.0,
                 ),
-                Text(
-                    'liczba powtórzeń: ${elementsToLearn.elementAt(0).repetitions}',
+                Container(
+                  width: progressWidth,
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                bottomLeft: Radius.circular(20.0)),
+                            color: Colors.greenAccent),
+                        height: 20.0,
+                        width: learnedTabWidth,
+                        child: Center(
+                          child: Text(learnedNumber.toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(color: Colors.black)),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20.0),
+                                bottomRight: Radius.circular(20.0)),
+                            color: Colors.redAccent),
+                        height: 20.0,
+                        width: toLearnTabWidth,
+                        child: Center(
+                            child: Text(
+                          toLearnNumber.toString(),
+                          style: Theme.of(context).textTheme.bodyText1,
+                        )),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Text('do nauczenia',
                     style: Theme.of(context).textTheme.bodyText1),
               ],
             ),
+            Text(
+                'liczba pozostałych powtórzeń: ${elementsToLearn.first.repetitions}',
+                style: Theme.of(context).textTheme.bodyText1),
             Column(
               children: [
                 Center(
@@ -228,17 +284,7 @@ class _LearningPageState extends State<LearningPage> {
                           : Colors.redAccent,
                     ),
                     onPressed: () {
-                      var learningElement = elementsToLearn.removeFirst();
-                      if (answerStatus == AnswerStatus.correct) {
-                        learningElement.decreaseRepetitions(1);
-                      } else {
-                        learningElement.increaseRepetitions(1);
-                      }
-                      if (learningElement.repetitions > 0) {
-                        elementsToLearn.add(learningElement);
-                      } else {
-                        learnedElements.add(learningElement.element);
-                      }
+                      elementsToLearn.removeFirst();
 
                       if (elementsToLearn.isEmpty) {
                         Navigator.pushReplacement(
@@ -262,11 +308,19 @@ class _LearningPageState extends State<LearningPage> {
                     onPressed: () {
                       if (checkAnswer()) {
                         answerStatus = AnswerStatus.correct;
+                        elementsToLearn.first.decreaseRepetitions(1);
                       } else {
                         answerStatus = AnswerStatus.incorrect;
+                        elementsToLearn.first.increaseRepetitions(1);
                       }
-                      FocusScope.of(context).unfocus();
+
+                      if (elementsToLearn.first.repetitions == 0) {
+                        learnedElements.add(elementsToLearn.first.element);
+                      } else {
+                        elementsToLearn.add(elementsToLearn.first);
+                      }
                       setState(() {});
+                      FocusScope.of(context).unfocus();
                     },
                     child: Text(buttonText),
                   )

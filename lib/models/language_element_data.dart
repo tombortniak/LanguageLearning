@@ -113,14 +113,24 @@ class LanguageElementData extends ChangeNotifier {
     return phrases.where((element) => element.language == language.id).toList();
   }
 
-  void filter(String query, LanguageElement languageElement) {
-    if (languageElement == LanguageElement.word) {
-      filterWords(query);
-    } else if (languageElement == LanguageElement.verb) {
-      filterVerbs(query);
+  Future filter(String query, LanguageElement languageElement) async {
+    if (query.isNotEmpty) {
+      if (languageElement == LanguageElement.word) {
+        await filterWords(query);
+      } else if (languageElement == LanguageElement.verb) {
+        await filterVerbs(query);
+      } else {
+        await filterPhrases(query);
+      }
     } else {
-      filterPhrases(query);
+      words = await Provider.of<LanguageDatabase>(context, listen: false)
+          .getAllWords();
+      verbs = await Provider.of<LanguageDatabase>(context, listen: false)
+          .getAllVerbs();
+      phrases = await Provider.of<LanguageDatabase>(context, listen: false)
+          .getAllPhrases();
     }
+
     notifyListeners();
   }
 
@@ -166,23 +176,29 @@ class LanguageElementData extends ChangeNotifier {
     return categories.where((element) => element.name.contains(query)).toList();
   }
 
-  void filterWords(String query) {
+  Future filterWords(String query) async {
+    var allWords = await Provider.of<LanguageDatabase>(context, listen: false)
+        .getAllWords();
     words.clear();
-    words.addAll(words
+    words.addAll(allWords
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }
 
-  void filterVerbs(String query) {
+  Future filterVerbs(String query) async {
+    var allVerbs = await Provider.of<LanguageDatabase>(context, listen: false)
+        .getAllVerbs();
     verbs.clear();
-    verbs.addAll(verbs
+    verbs.addAll(allVerbs
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }
 
-  void filterPhrases(String query) {
+  Future filterPhrases(String query) async {
+    var allPhrases = await Provider.of<LanguageDatabase>(context, listen: false)
+        .getAllPhrases();
     phrases.clear();
-    phrases.addAll(phrases
+    phrases.addAll(allPhrases
         .where((element) => element.content.toLowerCase().contains(query))
         .toList());
   }

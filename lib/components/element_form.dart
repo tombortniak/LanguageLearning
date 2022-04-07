@@ -385,13 +385,6 @@ class _ElementFormState extends State<ElementForm> {
                       child: const SizedBox(),
                     ),
                     Expanded(
-                      child: Text(
-                        '${kLanguageElementTranslations[widget.languageElement]}',
-                        style: Theme.of(context).textTheme.headline5,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: IconButton(
