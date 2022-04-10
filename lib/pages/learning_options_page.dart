@@ -6,7 +6,6 @@ import 'package:language_learning/constants.dart' hide Language;
 import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'learning_page.dart';
 
 class LearningOptionsPage extends StatefulWidget {
@@ -56,7 +55,7 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
                 iconData,
                 color: textColor,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10.0,
               ),
               Text(
@@ -137,9 +136,6 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
 
   List<dynamic> createLearningContent() {
     List<dynamic> learningContent = [];
-    // List<Word> words = [];
-    // List<Verb> verbs = [];
-    // List<Phrase> phrases = [];
     var allWords =
         context.read<LanguageElementData>().getWords(selectedLanguage!);
     var allVerbs =
@@ -202,92 +198,95 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
       child: Scaffold(
         appBar: AppBar(),
         body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+          margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
           child: Column(
             children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Column(
-                  children: [
-                    Text(
-                      'język',
-                      textAlign: TextAlign.center,
-                    ),
-                    Container(
-                      child: Divider(),
-                    ),
-                    DropdownButton(
-                      value: selectedLanguage,
-                      elevation: 0,
-                      isExpanded: false,
-                      items: context
-                          .read<LanguageElementData>()
-                          .languages
-                          .map((Language language) {
-                        return DropdownMenuItem(
-                          child: Center(
-                            child: Text(
-                              language.name,
-                            ),
-                          ),
-                          value: language,
-                        );
-                      }).toList(),
-                      onChanged: (Language? language) {
-                        setState(() {
-                          selectedLanguage = language;
-                          updateCategories();
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'elementy do nauki',
-                      textAlign: TextAlign.center,
-                    ),
-                    Container(
-                      child: Divider(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        LabeledRadio(
-                          value: LearningOption.all,
-                          groupValue: learningOption,
-                          label: 'wszystko',
-                          onChanged: (LearningOption? value) {
-                            setState(() {
-                              learningOption = value!;
-                            });
-                          },
-                        ),
-                        LabeledRadio(
-                          value: LearningOption.custom,
-                          groupValue: learningOption,
-                          label: 'niestandardowo',
-                          onChanged: (LearningOption? value) {
-                            setState(() {
-                              learningOption = value!;
-                            });
-                          },
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ]),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  Column(
+                    children: [
+                      const Text(
+                        'język',
+                        textAlign: TextAlign.center,
+                      ),
+                      const Divider(),
+                      DropdownButton(
+                        value: selectedLanguage,
+                        elevation: 0,
+                        isExpanded: false,
+                        items: context
+                            .read<LanguageElementData>()
+                            .languages
+                            .map((Language language) {
+                          return DropdownMenuItem(
+                            child: Center(
+                              child: Text(
+                                language.name,
+                              ),
+                            ),
+                            value: language,
+                          );
+                        }).toList(),
+                        onChanged: (Language? language) {
+                          setState(() {
+                            selectedLanguage = language;
+                            updateCategories();
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Column(
+                    children: [
+                      const Text(
+                        'elementy do nauki',
+                        textAlign: TextAlign.center,
+                      ),
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          LabeledRadio(
+                            value: LearningOption.all,
+                            groupValue: learningOption,
+                            label: 'wszystko',
+                            onChanged: (LearningOption? value) {
+                              setState(() {
+                                learningOption = value!;
+                              });
+                            },
+                          ),
+                          LabeledRadio(
+                            value: LearningOption.custom,
+                            groupValue: learningOption,
+                            label: 'niestandardowo',
+                            onChanged: (LearningOption? value) {
+                              setState(() {
+                                learningOption = value!;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
                     'części języka',
                     textAlign: TextAlign.center,
                   ),
-                  Container(
-                    child: Divider(),
-                  ),
+                  const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -331,17 +330,18 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
                   )
                 ],
               ),
+              SizedBox(
+                height: 10.0,
+              ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'kategorie',
                       textAlign: TextAlign.center,
                     ),
-                    Container(
-                      child: Divider(),
-                    ),
+                    const Divider(),
                     Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.vertical,
@@ -358,7 +358,7 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
               ),
               ElevatedButton(
                 onPressed: onOptionsSubmitted,
-                child: Text('Rozpocznij naukę'),
+                child: const Text('Rozpocznij naukę'),
               )
             ],
           ),

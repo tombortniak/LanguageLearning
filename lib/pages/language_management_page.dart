@@ -25,10 +25,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
   @override
   bool get wantKeepAlive => true;
   List<dynamic> elements = [];
-  final _editElementTextController = TextEditingController();
-  final _editTranslationTextController = TextEditingController();
   final _searchTextController = TextEditingController();
-  List<bool> editedFields = [];
   Color color = Colors.red;
   FToast? fToast;
 
@@ -56,10 +53,10 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                 Text(
                   elementName,
                 ),
-                Text(
+                const Text(
                   'tłumaczenie',
                 ),
-                Text('kategoria'),
+                const Text('kategoria'),
               ],
             ),
             Column(
@@ -261,12 +258,12 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                         background: Container(
                           color: color,
                           alignment: AlignmentDirectional.centerStart,
-                          child: Icon(Icons.delete),
+                          child: const Icon(Icons.delete),
                         ),
                         secondaryBackground: Container(
                           color: Colors.red,
                           alignment: AlignmentDirectional.centerEnd,
-                          child: Icon(Icons.delete),
+                          child: const Icon(Icons.delete),
                         ),
                         onDismissed: (direction) {
                           languageElementData.removeElement(
@@ -316,9 +313,10 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                         child: ElementCard(
                           onEditTapped: () {
                             showModalBottomSheet(
-                              shape: RoundedRectangleBorder(
+                              shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(25.0)),
+                                  top: Radius.circular(25.0),
+                                ),
                               ),
                               isScrollControlled: true,
                               context: context,
@@ -349,7 +347,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                                               .headline5,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 15.0,
                                       ),
                                       buildDetailsView(languageElements[index])

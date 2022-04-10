@@ -5,6 +5,8 @@ import 'package:language_learning/models/learning_element.dart';
 import 'package:language_learning/pages/learning_results_page.dart';
 import 'package:language_learning/constants.dart';
 import 'package:language_learning/database/database.dart';
+import 'package:provider/provider.dart';
+import 'package:language_learning/models/settings.dart';
 
 class LearningPage extends StatefulWidget {
   List<dynamic> learningContent;
@@ -34,7 +36,9 @@ class _LearningPageState extends State<LearningPage> {
     elementsToLearn.addAll(List.generate(
         widget.learningContent.length,
         (index) => LearningElement(
-            element: widget.learningContent[index], repetitions: 1)));
+            element: widget.learningContent[index],
+            repetitions: Provider.of<Settings>(context, listen: false)
+                .elementRepetitions)));
     super.initState();
   }
 
@@ -79,7 +83,6 @@ class _LearningPageState extends State<LearningPage> {
   }
 
   bool checkAnswer() {
-    var learningElement = elementsToLearn.elementAt(0);
     bool answer = true;
 
     for (int i = 0; i < fieldsNumber; ++i) {
@@ -123,10 +126,10 @@ class _LearningPageState extends State<LearningPage> {
               enabled: answerStatus == AnswerStatus.none,
               controller: textControllers[i],
               decoration: InputDecoration(
-                enabledBorder: UnderlineInputBorder(
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                focusedBorder: UnderlineInputBorder(
+                focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.deepPurple),
                 ),
                 disabledBorder: UnderlineInputBorder(
@@ -190,7 +193,7 @@ class _LearningPageState extends State<LearningPage> {
 
   @override
   Widget build(BuildContext context) {
-    progressWidth = MediaQuery.of(context).size.width * .6;
+    progressWidth = MediaQuery.of(context).size.width * .8;
 
     int allElementsNumber = widget.learningContent.length;
     int learnedNumber = learnedElements.length;
@@ -204,26 +207,25 @@ class _LearningPageState extends State<LearningPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+        margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('nauczone', style: Theme.of(context).textTheme.bodyText1),
-                SizedBox(
-                  width: 10.0,
-                ),
                 Container(
                   width: progressWidth,
                   child: Row(
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.0),
-                                bottomLeft: Radius.circular(20.0)),
+                            borderRadius: learnedElements.length !=
+                                    widget.learningContent.length
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(20.0),
+                                    bottomLeft: Radius.circular(20.0))
+                                : const BorderRadius.all(Radius.circular(20.0)),
                             color: Colors.greenAccent),
                         height: 20.0,
                         width: learnedTabWidth,
@@ -237,9 +239,11 @@ class _LearningPageState extends State<LearningPage> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20.0),
-                                bottomRight: Radius.circular(20.0)),
+                            borderRadius: learnedElements.isNotEmpty
+                                ? const BorderRadius.only(
+                                    topRight: Radius.circular(20.0),
+                                    bottomRight: Radius.circular(20.0))
+                                : const BorderRadius.all(Radius.circular(20.0)),
                             color: Colors.redAccent),
                         height: 20.0,
                         width: toLearnTabWidth,
@@ -252,11 +256,6 @@ class _LearningPageState extends State<LearningPage> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text('do nauczenia',
-                    style: Theme.of(context).textTheme.bodyText1),
               ],
             ),
             Text(
@@ -270,7 +269,7 @@ class _LearningPageState extends State<LearningPage> {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15.0,
                 ),
                 buildForm(),
@@ -288,10 +287,14 @@ class _LearningPageState extends State<LearningPage> {
 
                       if (elementsToLearn.isEmpty) {
                         Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const LearningResultsPage()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LearningResultsPage(
+                              learnedElements: learnedNumber,
+                              notLearnedElements: toLearnNumber,
+                            ),
+                          ),
+                        );
                       } else {
                         nextElement();
                       }
@@ -311,7 +314,9 @@ class _LearningPageState extends State<LearningPage> {
                         elementsToLearn.first.decreaseRepetitions(1);
                       } else {
                         answerStatus = AnswerStatus.incorrect;
-                        elementsToLearn.first.increaseRepetitions(1);
+                        elementsToLearn.first.increaseRepetitions(
+                            Provider.of<Settings>(context, listen: false)
+                                .elementRepetitionsAfterError);
                       }
 
                       if (elementsToLearn.first.repetitions == 0) {

@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:language_learning/pages/learning_options_page.dart';
+import 'package:language_learning/pages/settings_page.dart';
 import 'language_selection_page.dart';
 import 'package:language_learning/constants.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                 iconData,
                 color: textColor,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10.0,
               ),
               Text(
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Language Learning',
+            'language learning',
             style: Theme.of(context).textTheme.headline1,
             textAlign: TextAlign.center,
           ),
@@ -87,9 +88,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               ElevatedButton(
                 child: Container(
-                  width: 110.0,
-                  height: 110.0,
-                  margin: EdgeInsets.all(5.0),
+                  width: 100.0,
+                  height: 100.0,
+                  margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -124,8 +125,8 @@ class _HomePageState extends State<HomePage> {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 110.0,
-                  height: 110.0,
+                  width: 100.0,
+                  height: 100.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -155,8 +156,8 @@ class _HomePageState extends State<HomePage> {
               ),
               ElevatedButton(
                 child: Container(
-                  width: 110.0,
-                  height: 110.0,
+                  width: 100.0,
+                  height: 100.0,
                   margin: const EdgeInsets.all(5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -176,33 +177,14 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SettingsPage(),
+                      ));
+                },
               ),
-              ElevatedButton(
-                child: Container(
-                  width: 110.0,
-                  height: 110.0,
-                  margin: const EdgeInsets.all(5.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const FaIcon(
-                        FontAwesomeIcons.doorOpen,
-                        size: 35.0,
-                      ),
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        'Wyjście',
-                        style: Theme.of(context).textTheme.bodyText1,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                onPressed: () {},
-              )
             ],
           ),
         ],

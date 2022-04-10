@@ -8,7 +8,8 @@ class ElementCard extends StatefulWidget {
   final Function()? onEditTapped;
   final Function()? onDeleteTapped;
   final Function()? onDetailsTapped;
-  ElementCard({
+
+  const ElementCard({
     Key? key,
     required this.content,
     required this.translation,
@@ -49,14 +50,14 @@ class _ElementCardState extends State<ElementCard> {
                 },
               ),
               PopupMenuItem(
-                child: Text(
+                child: const Text(
                   'usuń',
                 ),
                 value: PopupAction.delete,
                 onTap: widget.onDeleteTapped,
               ),
               PopupMenuItem(
-                  child: Text(
+                  child: const Text(
                     'szczegóły',
                   ),
                   value: PopupAction.details,

@@ -6,7 +6,6 @@ import 'package:language_learning/database/database.dart';
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:provider/provider.dart';
 import 'language_page.dart';
-import 'package:language_learning/components/language_card.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:language_learning/constants.dart' hide Language;
 

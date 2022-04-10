@@ -1,10 +1,8 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:language_learning/constants.dart' hide Language;
 import 'package:language_learning/database/database.dart';
 import 'package:tuple/tuple.dart';
 import 'package:provider/provider.dart';
-import 'package:language_learning/database/database.dart';
 
 class LanguageElementData extends ChangeNotifier {
   List<Word> words = [];

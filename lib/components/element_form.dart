@@ -381,14 +381,14 @@ class _ElementFormState extends State<ElementForm> {
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: const SizedBox(),
+                    const Expanded(
+                      child: SizedBox(),
                     ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.close_rounded,
                           ),
                           onPressed: () {
@@ -404,14 +404,14 @@ class _ElementFormState extends State<ElementForm> {
                 alignment: Alignment.center,
                 child: _textFormFields[0],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               Align(
                 alignment: Alignment.center,
                 child: _textFormFields[1],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15.0,
               ),
               if (widget.languageElement == LanguageElement.verb)
@@ -429,7 +429,7 @@ class _ElementFormState extends State<ElementForm> {
                           _textFormFields[4],
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12.0,
                       ),
                       Column(
@@ -473,7 +473,7 @@ class _ElementFormState extends State<ElementForm> {
                             mode: Mode.BOTTOM_SHEET,
                             searchFieldProps: TextFieldProps(
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(5.0),
+                                contentPadding: const EdgeInsets.all(5.0),
                                 focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
                                         color: Colors.deepPurple),
@@ -502,7 +502,7 @@ class _ElementFormState extends State<ElementForm> {
                           );
                         }),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20.0,
                       ),
                       Tooltip(
@@ -553,7 +553,7 @@ class _ElementFormState extends State<ElementForm> {
                                           },
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 15.0,
                                       ),
                                       FloatingActionButton(
@@ -569,7 +569,7 @@ class _ElementFormState extends State<ElementForm> {
                                   );
                                 });
                           },
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                         ),
                       ),
                     ],
@@ -597,7 +597,7 @@ class _ElementFormState extends State<ElementForm> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25.0,
               )
             ],
