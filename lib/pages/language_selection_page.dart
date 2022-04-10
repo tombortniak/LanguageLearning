@@ -70,6 +70,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         context: context,
         builder: (context) {
           return SimpleDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
             children: [
               Center(
                 child: Text(
@@ -120,6 +122,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         context: context,
         builder: (context) {
           return SimpleDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
             children: [
               Center(
                 child: Text(
@@ -151,15 +155,18 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               SizedBox(
                 height: 10.0,
               ),
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    onAddLanguageDialogSubmitted();
-                  });
-                },
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 65.0),
+                child: FloatingActionButton.extended(
+                  label: Text(
+                    'Dodaj',
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      onAddLanguageDialogSubmitted();
+                    });
+                  },
                 ),
               ),
             ],
@@ -173,6 +180,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         context: context,
         builder: (context) {
           return SimpleDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
             children: [
               Center(
                 child: Text(
@@ -205,16 +214,17 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               SizedBox(
                 height: 10.0,
               ),
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    onEditLanguageDialogSubmitted(Language(
-                        id: language.id, name: _languageTextController.text));
-                  });
-                },
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 65.0),
+                child: FloatingActionButton.extended(
+                  label: Text('Edytuj',
+                      style: Theme.of(context).textTheme.bodyText1),
+                  onPressed: () {
+                    setState(() {
+                      onEditLanguageDialogSubmitted(Language(
+                          id: language.id, name: _languageTextController.text));
+                    });
+                  },
                 ),
               ),
             ],
@@ -227,6 +237,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         context: context,
         builder: (context) {
           return SimpleDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
             children: [
               Padding(
                 padding: EdgeInsets.all(10.0),
@@ -276,17 +288,21 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
 
   void onAddLanguageDialogSubmitted() async {
     var languages = await context.read<LanguageDatabase>().getLanguages();
-    if (languages
-        .any((element) => element.name == _languageTextController.text)) {
-      showMessage(MessageType.error, 'Podany język już istnieje');
+    if (_languageTextController.text.isNotEmpty) {
+      if (languages
+          .any((element) => element.name == _languageTextController.text)) {
+        showMessage(MessageType.error, 'Podany język już istnieje');
+      } else {
+        context.read<LanguageElementData>().addLanguage(LanguagesCompanion(
+              name: Value(_languageTextController.text),
+            ));
+        setState(() {});
+        showMessage(MessageType.success,
+            'Język ${_languageTextController.text} został dodany');
+        Navigator.pop(context);
+      }
     } else {
-      context.read<LanguageElementData>().addLanguage(LanguagesCompanion(
-            name: Value(_languageTextController.text),
-          ));
-      setState(() {});
-      showMessage(MessageType.success,
-          'Język ${_languageTextController.text} został dodany');
-      Navigator.pop(context);
+      showMessage(MessageType.error, 'Nazwa języka nie może być pusta');
     }
   }
 

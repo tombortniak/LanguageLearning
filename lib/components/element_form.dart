@@ -467,6 +467,10 @@ class _ElementFormState extends State<ElementForm> {
                         child: Consumer<LanguageElementData>(
                             builder: (context, languageElementData, child) {
                           return DropdownSearch(
+                            dropdownSearchDecoration:
+                                InputDecoration(border: InputBorder.none),
+                            popupShape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
                             onChanged: ((Category? value) {
                               selectedCategory = value;
                             }),
@@ -585,14 +589,14 @@ class _ElementFormState extends State<ElementForm> {
                 child: Tooltip(
                   message: 'Zatwierdź',
                   child: Center(
-                    child: FloatingActionButton(
+                    child: FloatingActionButton.extended(
+                      label: Text(
+                        'Dodaj',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                       onPressed: () {
                         _onFieldSubmitted('');
                       },
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                      ),
                     ),
                   ),
                 ),

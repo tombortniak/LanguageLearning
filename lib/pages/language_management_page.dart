@@ -42,124 +42,127 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
     } else {
       elementName = 'fraza';
     }
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  elementName,
-                ),
-                const Text(
-                  'tłumaczenie',
-                ),
-                const Text('kategoria'),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  element.content,
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                Text(
-                  element.translation,
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                Text(
-                  element.category == 0
-                      ? 'brak'
-                      : context
-                          .read<LanguageElementData>()
-                          .categories
-                          .where((e) => e.id == element.category)
-                          .toList()
-                          .first
-                          .name,
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-              ],
-            ),
-          ],
-        ),
-        if (widget.languageElement == LanguageElement.verb)
-          Column(
+    return Padding(
+      padding: const EdgeInsets.all(25.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(
-                height: 10.0,
-              ),
-              const Text('Liczba pojedyncza'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('1. osoba'),
-                      Text('2. osoba'),
-                      Text('3. osoba'),
-                    ],
+                  Text(
+                    elementName,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        element.firstPersonSingular,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        element.secondPersonSingular,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        element.thirdPersonSingular,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
+                  const Text(
+                    'tłumaczenie',
                   ),
+                  const Text('kategoria'),
                 ],
               ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              const Text('Liczba mnoga'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('1. osoba'),
-                      Text('2. osoba'),
-                      Text('3. osoba'),
-                    ],
+                  Text(
+                    element.content,
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        element.firstPersonPlural,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        element.secondPersonPlural,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        element.thirdPersonPlural,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
+                  Text(
+                    element.translation,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Text(
+                    element.category == 0
+                        ? 'brak'
+                        : context
+                            .read<LanguageElementData>()
+                            .categories
+                            .where((e) => e.id == element.category)
+                            .toList()
+                            .first
+                            .name,
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
               ),
             ],
           ),
-      ],
+          if (widget.languageElement == LanguageElement.verb)
+            Column(
+              children: [
+                const SizedBox(
+                  height: 10.0,
+                ),
+                const Text('Liczba pojedyncza'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text('1. osoba'),
+                        Text('2. osoba'),
+                        Text('3. osoba'),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          element.firstPersonSingular,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          element.secondPersonSingular,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          element.thirdPersonSingular,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                const Text('Liczba mnoga'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text('1. osoba'),
+                        Text('2. osoba'),
+                        Text('3. osoba'),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          element.firstPersonPlural,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          element.secondPersonPlural,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          element.thirdPersonPlural,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 
@@ -338,6 +341,9 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                                 context: context,
                                 builder: (context) {
                                   return SimpleDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0)),
                                     children: [
                                       Center(
                                         child: Text(
@@ -366,7 +372,31 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                       );
                     },
                   ),
-                )
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    child: FloatingActionButton(
+                      child: Icon(Icons.add, color: Colors.white),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0)),
+                          ),
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) {
+                            return ElementForm(
+                                languageElement: widget.languageElement,
+                                language: widget.language);
+                          },
+                        );
+                      },
+                    ),
+                    margin: EdgeInsets.all(25.0),
+                  ),
+                ),
               ],
             ),
           );

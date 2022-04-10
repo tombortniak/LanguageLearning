@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Text(
                         'Rozpocznij naukę',
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.headline5,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Text(
                         'Zarządzaj językami',
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.headline5,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -171,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Text(
                         'Ustawienia',
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.headline5,
                         textAlign: TextAlign.center,
                       ),
                     ],
