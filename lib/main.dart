@@ -43,7 +43,7 @@ class LanguageLearningApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Language Learning',
-      home: HomePage(),
+      home: SplashPage(),
       darkTheme: LanguageLearningTheme.dark(),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,

@@ -73,7 +73,7 @@ class _LanguageManagementPageState extends State<LanguageManagementPage>
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   Text(
-                    element.category == 0
+                    element.category == null
                         ? 'brak'
                         : context
                             .read<LanguageElementData>()

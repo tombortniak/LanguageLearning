@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:language_learning/components/element_form.dart';
 import 'package:language_learning/constants.dart' hide Language;
 import 'package:language_learning/models/language_element_data.dart';
 import 'package:language_learning/pages/language_management_page.dart';
@@ -63,7 +62,7 @@ class _LanguagePageState extends State<LanguagePage>
                 onPressed: () {
                   var categories = context
                       .read<LanguageElementData>()
-                      .getCategoriesBy(widget.language);
+                      .getCategories(widget.language);
                   showModalBottomSheet(
                     shape: const RoundedRectangleBorder(
                       borderRadius:
@@ -72,7 +71,8 @@ class _LanguagePageState extends State<LanguagePage>
                     context: context,
                     builder: (context) {
                       return Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 5.0),
                         child: Column(
                           children: [
                             Row(
@@ -101,7 +101,9 @@ class _LanguagePageState extends State<LanguagePage>
                                   itemCount: categories.length,
                                   itemBuilder: (context, index) {
                                     return ListTile(
-                                        title: Text(categories[index].name));
+                                      title: Text(categories[index].name),
+                                      trailing: Icon(Icons.more_horiz),
+                                    );
                                   }),
                             ),
                           ],

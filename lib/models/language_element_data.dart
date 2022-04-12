@@ -85,8 +85,37 @@ class LanguageElementData extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Category> getCategories() {
-    return categories;
+  Future removeWordsOf(Language language) async {
+    await context.read<LanguageDatabase>().removeWordsOf(language);
+    words.removeWhere((element) => element.language == language.id);
+  }
+
+  Future removeVerbsOf(Language language) async {
+    await context.read<LanguageDatabase>().removeVerbsOf(language);
+    verbs.removeWhere((element) => element.language == language.id);
+  }
+
+  Future removePhrasesOf(Language language) async {
+    await context.read<LanguageDatabase>().removePhrasesOf(language);
+    phrases.removeWhere((element) => element.language == language.id);
+  }
+
+  Future removeCategories(Language language) async {
+    await context.read<LanguageDatabase>().removeCategories(language);
+    categories.removeWhere((element) => element.language == language.id);
+  }
+
+  Future removeLanguage(Language language) async {
+    await Provider.of<LanguageDatabase>(context, listen: false)
+        .removeLanguage(language);
+    await context.read<LanguageDatabase>().removeLanguage(language);
+    languages.removeWhere((element) => element.id == language.id);
+  }
+
+  List<Category> getCategories(Language language) {
+    return categories
+        .where((element) => element.language == language.id)
+        .toList();
   }
 
   List<dynamic> getElements(LanguageElement languageElement) {
@@ -130,44 +159,6 @@ class LanguageElementData extends ChangeNotifier {
     }
 
     notifyListeners();
-  }
-
-  List<Category> getCategoriesBy(Language language) {
-    List<int> categoriesId = [1];
-
-    var languageWords =
-        words.where((element) => element.language == language.id);
-    var languageVerbs =
-        verbs.where((element) => element.language == language.id);
-    var languagePhrases =
-        phrases.where((element) => element.language == language.id);
-
-    for (var word in languageWords) {
-      if (!categoriesId.contains(word.category)) {
-        categoriesId.add(word.category!);
-      }
-    }
-
-    for (var verb in languageVerbs) {
-      if (!categoriesId.contains(verb.category)) {
-        categoriesId.add(verb.category!);
-      }
-    }
-
-    for (var phrase in languagePhrases) {
-      if (!categoriesId.contains(phrase.category)) {
-        categoriesId.add(phrase.category!);
-      }
-    }
-    categoriesId.removeAt(0);
-    var categoriesByLanguage = [
-      categories.first,
-      ...categories
-          .where((element) => categoriesId.contains(element.id))
-          .toList()
-    ];
-
-    return categoriesByLanguage;
   }
 
   List<Category> filterCategories(String query) {

@@ -47,6 +47,7 @@ class Languages extends Table {
 class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  IntColumn get language => integer().references(Languages, #id)();
 }
 
 LazyDatabase _openConnection() {
@@ -64,22 +65,18 @@ class LanguageDatabase extends _$LanguageDatabase {
   @override
   int get schemaVersion => 1;
 
-  @override
-  MigrationStrategy get migration {
-    return MigrationStrategy(onCreate: (m) async {
-      await m.createAll();
-      await into(categories).insert(CategoriesCompanion.insert(
-        name: 'inne',
-      ));
-    });
-  }
-
   Future<List<Language>> getLanguages() {
     return (select(languages)).get();
   }
 
   Future getAllCategories() {
     return (select(categories)).get();
+  }
+
+  Future removeCategories(Language language) {
+    return (delete(categories)
+          ..where((tbl) => tbl.language.equals(language.id)))
+        .go();
   }
 
   Future getElements(Language language, LanguageElement languageElement) {

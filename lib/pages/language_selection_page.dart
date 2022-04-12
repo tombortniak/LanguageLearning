@@ -241,7 +241,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                 borderRadius: BorderRadius.circular(20.0)),
             children: [
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(25.0),
                 child: Column(
                   children: [
                     Text(
@@ -320,17 +320,23 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
   }
 
   void deleteLanguage(Language language) async {
-    context.read<LanguageDatabase>().removeWordsOf(language);
-    context.read<LanguageDatabase>().removeVerbsOf(language);
-    context.read<LanguageDatabase>().removePhrasesOf(language);
-    context.read<LanguageDatabase>().removeLanguage(language);
+    Provider.of<LanguageElementData>(context, listen: false)
+        .removeWordsOf(language);
+    Provider.of<LanguageElementData>(context, listen: false)
+        .removeVerbsOf(language);
+    Provider.of<LanguageElementData>(context, listen: false)
+        .removePhrasesOf(language);
+    Provider.of<LanguageElementData>(context, listen: false)
+        .removeCategories(language);
+    Provider.of<LanguageElementData>(context, listen: false)
+        .removeLanguage(language);
   }
 
   @override
   void initState() {
     super.initState();
     _fToast = FToast();
-    _fToast!.init(context);
+    _fToast?.init(context);
   }
 
   @override

@@ -181,7 +181,8 @@ class $LanguagesTable extends Languages
 class Category extends DataClass implements Insertable<Category> {
   final int id;
   final String name;
-  Category({required this.id, required this.name});
+  final int language;
+  Category({required this.id, required this.name, required this.language});
   factory Category.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Category(
@@ -189,6 +190,8 @@ class Category extends DataClass implements Insertable<Category> {
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      language: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}language'])!,
     );
   }
   @override
@@ -196,6 +199,7 @@ class Category extends DataClass implements Insertable<Category> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['language'] = Variable<int>(language);
     return map;
   }
 
@@ -203,6 +207,7 @@ class Category extends DataClass implements Insertable<Category> {
     return CategoriesCompanion(
       id: Value(id),
       name: Value(name),
+      language: Value(language),
     );
   }
 
@@ -212,6 +217,7 @@ class Category extends DataClass implements Insertable<Category> {
     return Category(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      language: serializer.fromJson<int>(json['language']),
     );
   }
   @override
@@ -220,55 +226,69 @@ class Category extends DataClass implements Insertable<Category> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'language': serializer.toJson<int>(language),
     };
   }
 
-  Category copyWith({int? id, String? name}) => Category(
+  Category copyWith({int? id, String? name, int? language}) => Category(
         id: id ?? this.id,
         name: name ?? this.name,
+        language: language ?? this.language,
       );
   @override
   String toString() {
     return (StringBuffer('Category(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('language: $language')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, language);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Category && other.id == this.id && other.name == this.name);
+      (other is Category &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.language == this.language);
 }
 
 class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<int> id;
   final Value<String> name;
+  final Value<int> language;
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.language = const Value.absent(),
   });
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-  }) : name = Value(name);
+    required int language,
+  })  : name = Value(name),
+        language = Value(language);
   static Insertable<Category> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<int>? language,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (language != null) 'language': language,
     });
   }
 
-  CategoriesCompanion copyWith({Value<int>? id, Value<String>? name}) {
+  CategoriesCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<int>? language}) {
     return CategoriesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      language: language ?? this.language,
     );
   }
 
@@ -281,6 +301,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (language.present) {
+      map['language'] = Variable<int>(language.value);
+    }
     return map;
   }
 
@@ -288,7 +311,8 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   String toString() {
     return (StringBuffer('CategoriesCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('language: $language')
           ..write(')'))
         .toString();
   }
@@ -312,8 +336,15 @@ class $CategoriesTable extends Categories
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _languageMeta = const VerificationMeta('language');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<int?> language = GeneratedColumn<int?>(
+      'language', aliasedName, false,
+      type: const IntType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES languages (id)');
+  @override
+  List<GeneratedColumn> get $columns => [id, name, language];
   @override
   String get aliasedName => _alias ?? 'categories';
   @override
@@ -331,6 +362,12 @@ class $CategoriesTable extends Categories
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('language')) {
+      context.handle(_languageMeta,
+          language.isAcceptableOrUnknown(data['language']!, _languageMeta));
+    } else if (isInserting) {
+      context.missing(_languageMeta);
     }
     return context;
   }

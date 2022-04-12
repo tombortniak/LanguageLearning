@@ -42,9 +42,7 @@ class _ElementFormState extends State<ElementForm> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = Provider.of<LanguageElementData>(context, listen: false)
-        .categories
-        .first;
+    selectedCategory = null;
     fToast = FToast();
     fToast?.init(context);
     if (widget.languageElement == LanguageElement.verb) {
@@ -117,6 +115,7 @@ class _ElementFormState extends State<ElementForm> {
             .read<LanguageElementData>()
             .addCategory(CategoriesCompanion(
               name: drift.Value(newCategory),
+              language: drift.Value(widget.language.id),
             ));
         showToast('Kategoria została dodana', Colors.greenAccent, Icons.check);
         newCategoryTextController.clear();
@@ -173,14 +172,15 @@ class _ElementFormState extends State<ElementForm> {
   Tuple2<dynamic, String> makeNewElement() {
     String message = '';
     var element;
-    int categoryId = selectedCategory!.id;
     if (widget.languageElement == LanguageElement.word) {
       message = 'zostało dodane';
       element = WordsCompanion(
         language: drift.Value(widget.language.id),
         content: drift.Value(_textControllers[0].text),
         translation: drift.Value(_textControllers[1].text),
-        category: drift.Value(categoryId),
+        category: selectedCategory == null
+            ? drift.Value(null)
+            : drift.Value(selectedCategory!.id),
       );
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została dodana';
@@ -188,7 +188,9 @@ class _ElementFormState extends State<ElementForm> {
         language: drift.Value(widget.language.id),
         content: drift.Value(_textControllers[0].text),
         translation: drift.Value(_textControllers[1].text),
-        category: drift.Value(categoryId),
+        category: selectedCategory == null
+            ? drift.Value(null)
+            : drift.Value(selectedCategory!.id),
       );
     } else {
       message = 'został dodany';
@@ -202,7 +204,9 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: drift.Value(_textControllers[5].text),
         secondPersonPlural: drift.Value(_textControllers[6].text),
         thirdPersonPlural: drift.Value(_textControllers[7].text),
-        category: drift.Value(categoryId),
+        category: selectedCategory == null
+            ? drift.Value(null)
+            : drift.Value(selectedCategory!.id),
       );
     }
 
@@ -211,16 +215,16 @@ class _ElementFormState extends State<ElementForm> {
 
   Tuple2<dynamic, String> makeEditedElement() {
     String message = '';
-    int categoryId = selectedCategory!.id;
     var element;
     if (widget.languageElement == LanguageElement.word) {
       message = 'zostało zmienione';
       element = Word(
-          id: widget.initialValue.id,
-          language: widget.language.id,
-          content: _textControllers[0].text,
-          translation: _textControllers[1].text,
-          category: categoryId);
+        id: widget.initialValue.id,
+        language: widget.language.id,
+        content: _textControllers[0].text,
+        translation: _textControllers[1].text,
+        category: selectedCategory == null ? null : selectedCategory!.id,
+      );
     } else if (widget.languageElement == LanguageElement.phrase) {
       message = 'została zmieniona';
       element = Phrase(
@@ -228,7 +232,7 @@ class _ElementFormState extends State<ElementForm> {
           language: widget.language.id,
           content: _textControllers[0].text,
           translation: _textControllers[1].text,
-          category: categoryId);
+          category: selectedCategory == null ? null : selectedCategory!.id);
     } else {
       message = 'został zmieniony';
       element = Verb(
@@ -242,7 +246,7 @@ class _ElementFormState extends State<ElementForm> {
         firstPersonPlural: _textControllers[5].text,
         secondPersonPlural: _textControllers[6].text,
         thirdPersonPlural: _textControllers[7].text,
-        category: categoryId,
+        category: selectedCategory == null ? null : selectedCategory!.id,
       );
     }
 
@@ -467,6 +471,11 @@ class _ElementFormState extends State<ElementForm> {
                         child: Consumer<LanguageElementData>(
                             builder: (context, languageElementData, child) {
                           return DropdownSearch(
+                            emptyBuilder: (context, searchEntry) {
+                              return ListTile(
+                                title: Text('brak'),
+                              );
+                            },
                             dropdownSearchDecoration:
                                 InputDecoration(border: InputBorder.none),
                             popupShape: RoundedRectangleBorder(
@@ -496,10 +505,13 @@ class _ElementFormState extends State<ElementForm> {
                                 ),
                               ),
                             ),
+                            enabled: languageElementData
+                                .getCategories(widget.language)
+                                .isNotEmpty,
                             showSearchBox: true,
                             selectedItem: selectedCategory,
                             items: languageElementData
-                                .getCategoriesBy(widget.language),
+                                .getCategories(widget.language),
                             itemAsString: (Category? category) {
                               return category!.name;
                             },
@@ -519,6 +531,9 @@ class _ElementFormState extends State<ElementForm> {
                                 context: context,
                                 builder: (context) {
                                   return SimpleDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0)),
                                     children: [
                                       Center(
                                         child: Text(
@@ -560,13 +575,20 @@ class _ElementFormState extends State<ElementForm> {
                                       const SizedBox(
                                         height: 15.0,
                                       ),
-                                      FloatingActionButton(
-                                        onPressed: () {
-                                          onSubmittedNewCategory(newCategory);
-                                        },
-                                        child: const Icon(
-                                          Icons.check,
-                                          color: Colors.white,
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 65.0),
+                                        child: FloatingActionButton.extended(
+                                          heroTag: 'btn1',
+                                          onPressed: () {
+                                            onSubmittedNewCategory(newCategory);
+                                          },
+                                          label: Text(
+                                            'Dodaj',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
                                         ),
                                       ),
                                     ],

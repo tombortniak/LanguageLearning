@@ -72,7 +72,7 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
 
   void updateCategories() {
     categories =
-        context.read<LanguageElementData>().getCategoriesBy(selectedLanguage!);
+        context.read<LanguageElementData>().getCategories(selectedLanguage!);
     categoriesSelectedValues =
         List.generate(categories.length, (index) => false);
   }
@@ -113,13 +113,17 @@ class _LearningOptionsPageState extends State<LearningOptionsPage> {
           MessageType.error, 'Musisz wybrać części języka\n lub kategorie');
     } else {
       var learningContent = createLearningContent();
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LearningPage(
-              learningContent: learningContent,
-            ),
-          ));
+      if (learningContent.isEmpty) {
+        showMessage(MessageType.error, 'Brak słówek do nauki');
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LearningPage(
+                learningContent: learningContent,
+              ),
+            ));
+      }
     }
   }
 
