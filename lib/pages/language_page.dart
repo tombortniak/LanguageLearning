@@ -4,6 +4,7 @@ import 'package:language_learning/models/language_element_data.dart';
 import 'package:language_learning/pages/language_management_page.dart';
 import 'package:language_learning/database/database.dart';
 import 'package:provider/provider.dart';
+import 'categories_page.dart';
 
 class LanguagePage extends StatefulWidget {
   final Language language;
@@ -60,57 +61,12 @@ class _LanguagePageState extends State<LanguagePage>
               IconButton(
                 icon: const Icon(Icons.category),
                 onPressed: () {
-                  var categories = context
-                      .read<LanguageElementData>()
-                      .getCategories(widget.language);
-                  showModalBottomSheet(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(25.0)),
-                    ),
-                    context: context,
-                    builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15.0, horizontal: 5.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Kategorie',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.headline4,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close_rounded,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: categories.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(categories[index].name),
-                                      trailing: Icon(Icons.more_horiz),
-                                    );
-                                  }),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: ((context) => CategoriesPage(
+                                language: widget.language,
+                              ))));
                 },
               ),
             ],

@@ -32,10 +32,32 @@ class LanguageElementData extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future updateCategory(Category category) async {
+    await context.read<LanguageDatabase>().updateCategory(category);
+    categories[categories.indexWhere((element) => element.id == category.id)] =
+        category;
+  }
+
+  Future removeCategory(Category category) async {
+    await context.read<LanguageDatabase>().removeCategory(category);
+    categories.removeWhere((element) => element.id == category.id);
+  }
+
   Future addLanguage(LanguagesCompanion language) async {
     var row = await context.read<LanguageDatabase>().addLanguage(language);
     languages.add(row);
     notifyListeners();
+  }
+
+  Future updateLanguage(Language language) async {
+    await context.read<LanguageDatabase>().updateLanguage(language);
+    languages[languages.indexWhere((element) => element.id == language.id)] =
+        language;
+  }
+
+  Future removeLanguage(Language language) async {
+    await context.read<LanguageDatabase>().removeLanguage(language);
+    languages.removeWhere((element) => element.id == language.id);
   }
 
   Future addElement(dynamic element, LanguageElement languageElement) async {
@@ -103,13 +125,6 @@ class LanguageElementData extends ChangeNotifier {
   Future removeCategories(Language language) async {
     await context.read<LanguageDatabase>().removeCategories(language);
     categories.removeWhere((element) => element.language == language.id);
-  }
-
-  Future removeLanguage(Language language) async {
-    await Provider.of<LanguageDatabase>(context, listen: false)
-        .removeLanguage(language);
-    await context.read<LanguageDatabase>().removeLanguage(language);
-    languages.removeWhere((element) => element.id == language.id);
   }
 
   List<Category> getCategories(Language language) {

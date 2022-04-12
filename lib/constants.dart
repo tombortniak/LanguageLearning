@@ -1,10 +1,5 @@
 const kSpanishSpecialCharacters = ['á', 'é', 'í', 'ñ', 'ó', 'ú', 'ü', '¿', '¡'];
 
-const kLanguageNameTranslations = {
-  Language.spanish: 'hiszpański',
-  Language.english: 'angielski'
-};
-
 const kLanguageElementTranslations = {
   LanguageElement.word: 'słowo',
   LanguageElement.verb: 'czasownik',
@@ -12,8 +7,6 @@ const kLanguageElementTranslations = {
 };
 
 enum MessageType { error, success }
-
-enum Language { spanish, english }
 
 enum LanguageElement { word, verb, phrase }
 

@@ -62,10 +62,10 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         ));
   }
 
-  Future showDetailsDialog(Language language) async {
-    var words = await context.read<LanguageDatabase>().getWords(language);
-    var verbs = await context.read<LanguageDatabase>().getVerbs(language);
-    var phrases = await context.read<LanguageDatabase>().getPhrases(language);
+  void showDetailsDialog(Language language) {
+    var words = context.read<LanguageElementData>().words;
+    var verbs = context.read<LanguageElementData>().verbs;
+    var phrases = context.read<LanguageElementData>().phrases;
     showDialog(
         context: context,
         builder: (context) {
@@ -158,6 +158,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 65.0),
                 child: FloatingActionButton.extended(
+                  heroTag: 'btn5',
                   label: Text(
                     'Dodaj',
                     style: Theme.of(context).textTheme.bodyText1,
@@ -217,6 +218,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 65.0),
                 child: FloatingActionButton.extended(
+                  heroTag: 'btn6',
                   label: Text('Edytuj',
                       style: Theme.of(context).textTheme.bodyText1),
                   onPressed: () {
@@ -287,7 +289,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
   }
 
   void onAddLanguageDialogSubmitted() async {
-    var languages = await context.read<LanguageDatabase>().getLanguages();
+    var languages = context.read<LanguageElementData>().languages;
     if (_languageTextController.text.isNotEmpty) {
       if (languages
           .any((element) => element.name == _languageTextController.text)) {
@@ -313,7 +315,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         .any((element) => element.name == _languageTextController.text)) {
       showMessage(MessageType.error, 'Podany język już istnieje');
     } else {
-      context.read<LanguageDatabase>().updateLanguage(language);
+      context.read<LanguageElementData>().updateLanguage(language);
       showMessage(MessageType.success, 'Język został zmieniony');
       Navigator.pop(context);
     }
@@ -342,111 +344,96 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Wybierz język',
-          style: Theme.of(context).textTheme.headline4,
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          Tooltip(
-            message: 'Dodaj język',
-            child: IconButton(
-              onPressed: () {
-                showNewLanguageDialog();
-              },
-              icon: Icon(Icons.add),
-            ),
+        appBar: AppBar(
+          title: Text(
+            'Wybierz język',
+            style: Theme.of(context).textTheme.headline4,
           ),
-        ],
-      ),
-      body: FutureBuilder<List<Language>>(
-        future: context.read<LanguageDatabase>().getLanguages(),
-        builder:
-            (BuildContext context, AsyncSnapshot<List<Language>> snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LanguagePage(language: snapshot.data![index]),
-                            ));
-                      },
-                      child: ListTile(
-                        title: Text(
-                          snapshot.data![index].name,
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                        trailing: PopupMenuButton(
-                          tooltip: '',
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry>[
-                            PopupMenuItem(
-                              child: Text(
-                                'edytuj',
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                              value: PopupAction.edit,
-                              onTap: () {
-                                WidgetsBinding.instance!
-                                    .addPostFrameCallback((_) {
-                                  showEditLanguageDialog(snapshot.data![index]);
-                                });
-                              },
-                            ),
-                            PopupMenuItem(
-                              child: Text(
-                                'usuń',
-                              ),
-                              value: PopupAction.delete,
-                              onTap: () {
-                                WidgetsBinding.instance!
-                                    .addPostFrameCallback((_) {
-                                  showDeleteLanguageDialog(
-                                      snapshot.data![index]);
-                                });
-                              },
-                            ),
-                            PopupMenuItem(
-                                child: Text(
-                                  'szczegóły',
-                                ),
-                                value: PopupAction.details,
-                                onTap: () {
-                                  WidgetsBinding.instance!
-                                      .addPostFrameCallback((_) async {
-                                    await showDetailsDialog(
-                                        snapshot.data![index]);
-                                  });
-                                })
-                          ],
-                        ),
-                      ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            Tooltip(
+              message: 'Dodaj język',
+              child: IconButton(
+                onPressed: () {
+                  showNewLanguageDialog();
+                },
+                icon: Icon(Icons.add),
+              ),
+            ),
+          ],
+        ),
+        body: Consumer<LanguageElementData>(
+            builder: ((context, languageData, child) {
+          return ListView.builder(
+            itemCount: languageData.languages.length,
+            itemBuilder: (context, index) {
+              return Card(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LanguagePage(
+                              language: languageData.languages[index]),
+                        ));
+                  },
+                  child: ListTile(
+                    title: Text(
+                      languageData.languages[index].name,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
-                  );
-                });
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Błąd przy pobieraniu danych'),
-            );
-          } else {
-            return Center(
-              child: Text('Trwa pobieranie danych'),
-            );
-          }
-        },
-      ),
-    );
+                    trailing: PopupMenuButton(
+                      tooltip: '',
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          child: Text(
+                            'edytuj',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          value: PopupAction.edit,
+                          onTap: () {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              showEditLanguageDialog(
+                                  languageData.languages[index]);
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: Text(
+                            'usuń',
+                          ),
+                          value: PopupAction.delete,
+                          onTap: () {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              showDeleteLanguageDialog(
+                                  languageData.languages[index]);
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
+                            child: Text(
+                              'szczegóły',
+                            ),
+                            value: PopupAction.details,
+                            onTap: () {
+                              WidgetsBinding.instance!
+                                  .addPostFrameCallback((_) {
+                                showDetailsDialog(
+                                    languageData.languages[index]);
+                              });
+                            })
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        })));
   }
 }

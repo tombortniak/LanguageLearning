@@ -133,6 +133,15 @@ class LanguageDatabase extends _$LanguageDatabase {
     return row;
   }
 
+  Future updateCategory(Category category) {
+    return update(categories).replace(category);
+  }
+
+  Future removeCategory(Category category) {
+    return (delete(categories)..where((tbl) => tbl.id.equals(category.id)))
+        .go();
+  }
+
   Future<Word> addWord(WordsCompanion word) {
     final row = into(words).insertReturning(word);
     return row;
